@@ -107,39 +107,40 @@ table_1 <- data_info[order(num_func(data_info$perc_w)),]
 
 mentions <- NULL
 # mentions_sub <- NULL
-for(j in 1:length(files)){ 
-  work  <- files[j]
-  # only files where main character gender was identified 
-  # if (work %in% meta_mc.df$ID){
-  nodes <- data.frame(read_csv(files[j]))
-  m_counts <- data.frame(nodes[,2]) # only pull mentions
-  extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200)) # add columns
-  colnames(extra) <- colnames(m_counts) #give same column names
-  mentions_bind <- rbind(m_counts, extra) #bind
-  mentions <- cbind(mentions, mentions_bind[1:150,])
-  # mentions_sub <- cbind(mentions_sub, mentions_bind[1:150,])
-  # }
-}
+
+# for(j in 1:length(files)){ 
+#   work  <- files[j]
+#   # only files where main character gender was identified 
+#   # if (work %in% meta_mc.df$ID){
+#   nodes <- data.frame(read_csv(files[j]))
+#   m_counts <- data.frame(nodes[,2]) # only pull mentions
+#   extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200)) # add columns
+#   colnames(extra) <- colnames(m_counts) #give same column names
+#   mentions_bind <- rbind(m_counts, extra) #bind
+#   mentions <- cbind(mentions, mentions_bind[1:150,])
+#   # mentions_sub <- cbind(mentions_sub, mentions_bind[1:150,])
+#   # }
+# }
 
 # count up sums for each rank position for both cases 
 rank_m <- NULL
 rank_m_sub <- NULL
-for (i in 1:nrow(mentions)){
-  mean <- mean(num_func(mentions[i,]), na.rm=TRUE)
-  sum <- sum(mentions[i,], na.rm=TRUE)
-  log_sum <- log(sum)
-  rank <- i
-  temp <- data.frame(cbind(rank,mean,sum,log_sum))
-  rank_m <- data.frame(rbind(rank_m,temp))
-}
-for (i in 1:nrow(mentions_sub)){
-  mean <- mean(num_func(mentions_sub[i,]), na.rm=TRUE)
-  sum <- sum(mentions_sub[i,], na.rm=TRUE)
-  log_sum <- log(sum)
-  rank <- i
-  temp <- data.frame(cbind(rank,mean,sum,log_sum))
-  rank_m_sub <- data.frame(rbind(rank_m_sub,temp))
-}
+# for (i in 1:nrow(mentions)){
+#   mean <- mean(num_func(mentions[i,]), na.rm=TRUE)
+#   sum <- sum(mentions[i,], na.rm=TRUE)
+#   log_sum <- log(sum)
+#   rank <- i
+#   temp <- data.frame(cbind(rank,mean,sum,log_sum))
+#   rank_m <- data.frame(rbind(rank_m,temp))
+# }
+# for (i in 1:nrow(mentions_sub)){
+#   mean <- mean(num_func(mentions_sub[i,]), na.rm=TRUE)
+#   sum <- sum(mentions_sub[i,], na.rm=TRUE)
+#   log_sum <- log(sum)
+#   rank <- i
+#   temp <- data.frame(cbind(rank,mean,sum,log_sum))
+#   rank_m_sub <- data.frame(rbind(rank_m_sub,temp))
+# }
 
 # BUILD  
 # run on all works 
@@ -160,9 +161,9 @@ figure_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
 
 # DATA
 # calculates raw counts of M/ W/ ? by rank position 
-setwd(wd)
+# setwd(wd)
 files <- list.files('nodes_ALL')
-setwd(paste(getwd(),('nodes_ALL'),sep = "/"))
+# setwd(paste(getwd(),('nodes_ALL'),sep = "/"))
 
 # run four times turning off / on condition
 # once on all works (raw) 
