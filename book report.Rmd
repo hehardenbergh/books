@@ -7,6 +7,12 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+# in its own chunk
+
+wd <- "/Users/hehardenbergh/books" # set working directory
+setwd(wd)
+
 ```
 
 ```{r}
@@ -44,7 +50,10 @@ library(RColorBrewer)
 
 library(tidyverse)
 
-wd <- '~/Users/hehardenbergh/books/books.data' # set working directory
+```
+
+```{r }
+
 num_func  <- function(x){as.numeric(as.character(x))}
 
 # ------------------------
@@ -70,19 +79,24 @@ meta_w.df  <- metadata.df[metadata.df$ag == 'F',]
 tokens_files <- list.files('tokens_ALL')
 nodes_list <- c('nodes_YA', 'nodes_NYT', 'nodes_MY', 'nodes_SF', 'nodes_BS', 'nodes_ROM', 'nodes_PW')
 edges_list <- c('edges_YA', 'edges_NYT', 'edges_MY', 'edges_SF', 'edges_BS', 'edges_ROM', 'edges_PW')
+```
 
+```{r }
+
+genre_levels <- unique(metadata.df$genre)
 
 # 1b: TABLE ONE
 # - - - - - - - - 
 # gather info for table 1
+
 data_info <- NULL
-for (i in 1:nlevels(metadata.df$genre)){
-  files <- list.files('nodes_ALL')
-  meta_sub <- metadata.df[metadata.df$genre == levels(metadata.df$genre)[i],]
+for (i in 1:length(genre_levels)){
+  files <- list.files('books.data/nodes_ALL')
+  meta_sub <- metadata.df[metadata.df$genre == genre_levels[i],]
   titles  <- files[files %in% meta_sub$ID]
   author <- str_split_fixed(titles, "_", 3)
   no_authors <- length(unique(author[,2]))
-  genre <- levels(metadata.df$genre)[i]
+  genre <- genre_levels[i]
   novels <- length(titles)
   perc_w <- (length(which(titles %in% meta_w.df$ID))/novels)*100
   temp_info <- data.frame(cbind(genre, novels, no_authors, perc_w))
@@ -108,19 +122,19 @@ table_1 <- data_info[order(num_func(data_info$perc_w)),]
 mentions <- NULL
 # mentions_sub <- NULL
 
-# for(j in 1:length(files)){ 
-#   work  <- files[j]
-#   # only files where main character gender was identified 
-#   # if (work %in% meta_mc.df$ID){
-#   nodes <- data.frame(read_csv(files[j]))
-#   m_counts <- data.frame(nodes[,2]) # only pull mentions
-#   extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200)) # add columns
-#   colnames(extra) <- colnames(m_counts) #give same column names
-#   mentions_bind <- rbind(m_counts, extra) #bind
-#   mentions <- cbind(mentions, mentions_bind[1:150,])
-#   # mentions_sub <- cbind(mentions_sub, mentions_bind[1:150,])
-#   # }
-# }
+for(j in 1:length(files)){
+  work  <- files[j]
+  # only files where main character gender was identified
+  # if (work %in% meta_mc.df$ID){
+  nodes <- data.frame(read_csv(files[j]))
+  m_counts <- data.frame(nodes[,2]) # only pull mentions
+  extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200)) # add columns
+  colnames(extra) <- colnames(m_counts) #give same column names
+  mentions_bind <- rbind(m_counts, extra) #bind
+  mentions <- cbind(mentions, mentions_bind[1:150,])
+  # mentions_sub <- cbind(mentions_sub, mentions_bind[1:150,])
+  # }
+}
 
 # count up sums for each rank position for both cases 
 rank_m <- NULL
@@ -163,7 +177,7 @@ figure_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
 # calculates raw counts of M/ W/ ? by rank position 
 # setwd(wd)
 files <- list.files('nodes_ALL')
-# setwd(paste(getwd(),('nodes_ALL'),sep = "/"))
+setwd(paste(wd,'nodes_ALL',sep = "/"))
 
 # run four times turning off / on condition
 # once on all works (raw) 
