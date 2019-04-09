@@ -8,7 +8,12 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-# in its own chunk
+# set working directory here, with a line of code in its own chunk. Whenever a
+# file is read in or a folder is accessed in other chunks, I make sure that the
+# correct working directory is called. originally, the authors organized their
+# code with setwd() so that they didn't have to manually code all the file
+# paths. Turns out that was confusing for my directories because of how I wanted
+# to organize the authors' original data.
 
 wd <- "/Users/hehardenbergh/books" # set working directory
 setwd(wd)
@@ -32,7 +37,7 @@ setwd(wd)
 # This script also builds tables and figures.
 # To run, change wd to a directory with nodes_ALL, edges_ALL, hierarchy_metadata.csv, and hierarchy_adj.R 
 
-# REQUIREMENTS
+# load libraries
 
 library(epiR)
 library(stats)
@@ -47,12 +52,17 @@ library(rapport)
 
 library(ggplot2)
 library(RColorBrewer)
+library(gt)
+library(knitr)
+library(kableExtra)
 
 library(tidyverse)
 
 ```
 
 ```{r }
+# dont know why this function is here. It makes numeric strings character
+# strings, but why???
 
 num_func  <- function(x){as.numeric(as.character(x))}
 
@@ -70,24 +80,36 @@ epi_add  <- function(pos,tested,se,sp){
 # = = = = = = = = = = = 
 
 # metadata
+
 metadata.df <- data.frame(read_csv('/Users/hehardenbergh/books/books.data/hierarchy_metadata.csv'))
+
 # subset by works with main character identified and by women
+
 meta_mc.df <- metadata.df[metadata.df$mc_calc == 'Y',]
 meta_w.df  <- metadata.df[metadata.df$ag == 'F',]
 
 # tokens, nodes and edges
+
 tokens_files <- list.files('tokens_ALL')
-nodes_list <- c('nodes_YA', 'nodes_NYT', 'nodes_MY', 'nodes_SF', 'nodes_BS', 'nodes_ROM', 'nodes_PW')
-edges_list <- c('edges_YA', 'edges_NYT', 'edges_MY', 'edges_SF', 'edges_BS', 'edges_ROM', 'edges_PW')
+
+nodes_list <- c('nodes_YA', 'nodes_NYT', 'nodes_MY', 'nodes_SF',
+                'nodes_BS', 'nodes_ROM', 'nodes_PW')
+
+edges_list <- c('edges_YA', 'edges_NYT', 'edges_MY', 'edges_SF', 
+                'edges_BS', 'edges_ROM', 'edges_PW')
 ```
 
 ```{r }
-
-genre_levels <- unique(metadata.df$genre)
-
 # 1b: TABLE ONE
 # - - - - - - - - 
 # gather info for table 1
+
+# originally, authors used nlevels() and levels() to access the number of genres
+# there are to build dataframes. but you need a factor to do that. the variable
+# metadata.df$genre is a character string. so, I keep this for loop to build
+# data frames but I used a new object, called "genre_levels".
+
+genre_levels <- unique(metadata.df$genre)
 
 data_info <- NULL
 for (i in 1:length(genre_levels)){
@@ -103,8 +125,37 @@ for (i in 1:length(genre_levels)){
   data_info <- data.frame(rbind(data_info, temp_info))
 }
 # build and order table 1 
+
 table_1 <- data_info[order(num_func(data_info$perc_w)),]
 
+# make it pretty: column names, round percentages, etc. using gt().
+
+table_1_tidy <- table_1 %>% 
+  rename("code" = "genre") %>% 
+  mutate(genre = c("Science Fiction",
+                   "Prizewinners",
+                   "Bestsellers",
+                   "NYT Reviewed",
+                   "Mystery",
+                   "Young Adult",
+                   "Romance"))
+
+table_1_tidy %>%
+  gt() %>%
+  cols_move_to_start(columns = vars(genre)) %>%
+  cols_label(code = "Code", 
+             novels = "Novels",
+             no_authors = "# Authors",
+             perc_w = "% Women Authors",
+             genre = "Genre") %>% 
+  fmt_number(columns = perc_w, 
+             decimals = 1)
+
+
+```
+
+
+```{r }
 
 # 1c: FIGURE ONE
 # - - - - - - - - 
