@@ -113,17 +113,27 @@ genre_levels <- unique(metadata.df$genre)
 
 data_info <- NULL
 for (i in 1:length(genre_levels)){
+  
+  # find the data in the correct file path/working directory:
+  
   files <- list.files('books.data/nodes_ALL')
   meta_sub <- metadata.df[metadata.df$genre == genre_levels[i],]
+  
+  # Start to make columns with data
+  
   titles  <- files[files %in% meta_sub$ID]
   author <- str_split_fixed(titles, "_", 3)
   no_authors <- length(unique(author[,2]))
   genre <- genre_levels[i]
   novels <- length(titles)
   perc_w <- (length(which(titles %in% meta_w.df$ID))/novels)*100
+  
+  # bind for a dataframe
+  
   temp_info <- data.frame(cbind(genre, novels, no_authors, perc_w))
   data_info <- data.frame(rbind(data_info, temp_info))
 }
+
 # build and order table 1 
 
 table_1 <- data_info[order(num_func(data_info$perc_w)),]
@@ -163,26 +173,39 @@ table_1_tidy %>%
 # DATA
 # calculates the mentions for each character by rank position 
 
-### not sure why they use this setwd(wd) stuff...
-
-
 # run twice turning off / on condition
 # once on all works (mentions) 
 # once on only works with main character identified by gender (mentions_sub)
 
 mentions <- NULL
+
 # mentions_sub <- NULL
 
 for(j in 1:length(files)){
   work  <- files[j]
+  
   # only files where main character gender was identified
   # if (work %in% meta_mc.df$ID){
+  
   nodes <- data.frame(read_csv(files[j]))
-  m_counts <- data.frame(nodes[,2]) # only pull mentions
-  extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200)) # add columns
-  colnames(extra) <- colnames(m_counts) #give same column names
-  mentions_bind <- rbind(m_counts, extra) #bind
+  
+  # only pull mentions
+  
+  m_counts <- data.frame(nodes[,2]) 
+  
+  # add columns
+  
+  extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200))
+  
+  #give same column names
+  
+  colnames(extra) <- colnames(m_counts) 
+  
+  #bind
+  
+  mentions_bind <- rbind(m_counts, extra) 
   mentions <- cbind(mentions, mentions_bind[1:150,])
+  
   # mentions_sub <- cbind(mentions_sub, mentions_bind[1:150,])
   # }
 }
@@ -219,7 +242,10 @@ figure_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
         text = element_text(size = 11, family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11))
+```
 
+
+```{r }
 
 # 1d: FIGURE TWO
 # - - - - - - - - 
