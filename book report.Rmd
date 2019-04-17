@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-# source("books.data/hierarchy_adj.r")
+source("./books.data/hierarchy_adj.r")
 ```
 
 ```{r}
@@ -84,8 +84,8 @@ num_func  <- function(x){as.numeric(as.character(x))}
 # SECTION I: DATA
 # ------------------------
 
-epi_add  <- function(pos,tested,se,sp){
-  epi  <- (epi.prev(pos,tested,se_2, sp_2)$tp[[1]])*.01
+epi_add  <- function(pos, tested, se, sp){
+  epi  <- (epi.prev(pos, tested, se_2, sp_2)$tp[[1]])*.01
   add  <- num_func(round((tested*epi)-pos))
   return(add)
 }
@@ -373,16 +373,19 @@ perc_unknown20 <- sum(ranks_all$q[1:20])/sum(ranks_all$all[1:20])
 # BUILD 
 # run on all works
 
-figure_2 <- ggplot(data=ranks_all, aes(x=rank, y=cumulative_q)) +
+figure_2 <- ggplot(data=ranks_all, aes(x = rank, y = cumulative_q)) +
   geom_line()+
   ggtitle("% Unassigned Characters by Mentions Rank")+
-  labs(x="Character Rank by Mentions", y="Cumulative Percent Unassigned")+
+  labs(x = "Character Rank by Mentions", 
+       y = "Cumulative Percent Unassigned")+
   theme_bw() + 
   geom_vline(xintercept = 20, linetype = "dashed") + 
-  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
+  theme(plot.title = element_text(size = 13, 
+                                  family = "Times New Roman", 
+                                  face = "bold"),
         text = element_text(size = 11, family = "Times New Roman"),
         axis.title = element_text(face="bold"),
-        axis.text.x=element_text(size = 11))
+        axis.text.x = element_text(size = 11))
 ```
 
 
