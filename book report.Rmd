@@ -15,8 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # paths. Turns out that was confusing for my directories because of how I wanted
 # to organize the authors' original data.
 
-wd <- "/Users/hehardenbergh/books"
-setwd(wd)
+# wd <- "/Users/hehardenbergh/books"
+# setwd(wd)
 
 # source("books.data/hierarchy_adj.r")
 ```
@@ -62,8 +62,17 @@ library(tidyverse)
 ```
 
 ```{r }
+# unzip the folders nodes_ALL and edges_ALL.
+
+# get rid of all working directory calls. manually set path directories for each
+# file read-in. when you get rid of it, just be careful about where you are
+# trying to grab files from. sometimes they are in different places.
+
+
+
 # dont know why this function is here. It makes numeric strings character
-# strings, but why???
+# strings, but why??? --> turning factor variables into numeric. You can't do it
+# though because of the way that factors are shown internally in R.
 
 num_func  <- function(x){as.numeric(as.character(x))}
 
@@ -80,9 +89,9 @@ epi_add  <- function(pos,tested,se,sp){
 # 1: DATA & DATA PREP
 # = = = = = = = = = = = 
 
-# metadata
+# metadata. make sure the file path name is correct in your project.
 
-metadata.df <- data.frame(read_csv('/Users/hehardenbergh/books/books.data/hierarchy_metadata.csv'))
+metadata.df <- data.frame(read_csv('books.data/hierarchy_metadata.csv'))
 
 # subset by works with main character identified and by women
 
@@ -90,6 +99,11 @@ meta_mc.df <- metadata.df[metadata.df$mc_calc == 'Y',]
 meta_w.df  <- metadata.df[metadata.df$ag == 'F',]
 
 # tokens, nodes and edges
+
+
+# interesting that I don't have the tokens file... in the original data.
+# What/Where is it? (Command-shift-f finds every place something is mentioned in
+# the project...)
 
 tokens_files <- list.files('tokens_ALL')
 
@@ -184,15 +198,12 @@ mentions <- NULL
 
 # set working directory to where the data lives.
 
-setwd("/Users/hehardenbergh/books/books.data/nodes_ALL")
-files <- list.files('nodes_ALL')
+files <- list.files('./books.data/nodes_ALL')
 
 for(j in 1:length(files)){
-  
   work  <- files[j]
-  
-  nodes <- data.frame(read_csv(files[j]))
-  
+  nodes <- data.frame(read_csv(paste0('books.data/nodes_ALL/', (files[j]))))
+
   # only pull mentions
   
   m_counts <- data.frame(nodes[,2]) 
@@ -217,14 +228,16 @@ for(j in 1:length(files)){
 # count up sums for each rank position for both cases 
 rank_m <- NULL
 rank_m_sub <- NULL
-# for (i in 1:nrow(mentions)){
-#   mean <- mean(num_func(mentions[i,]), na.rm=TRUE)
-#   sum <- sum(mentions[i,], na.rm=TRUE)
-#   log_sum <- log(sum)
-#   rank <- i
-#   temp <- data.frame(cbind(rank,mean,sum,log_sum))
-#   rank_m <- data.frame(rbind(rank_m,temp))
-# }
+
+for (i in 1:nrow(mentions)){
+  mean <- mean(num_func(mentions[i,]), na.rm=TRUE)
+  sum <- sum(mentions[i,], na.rm=TRUE)
+  log_sum <- log(sum)
+  rank <- i
+  temp <- data.frame(cbind(rank,mean,sum,log_sum))
+  rank_m <- data.frame(rbind(rank_m,temp))
+}
+
 # for (i in 1:nrow(mentions_sub)){
 #   mean <- mean(num_func(mentions_sub[i,]), na.rm=TRUE)
 #   sum <- sum(mentions_sub[i,], na.rm=TRUE)
@@ -249,7 +262,6 @@ figure_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11))
 
-print(figure_1)
 ```
 
 
@@ -262,7 +274,7 @@ print(figure_1)
 # calculates raw counts of M/ W/ ? by rank position 
 # setwd(wd)
 files <- list.files('nodes_ALL')
-setwd(paste(wd,'nodes_ALL',sep = "/"))
+# setwd(paste(wd,'nodes_ALL',sep = "/"))
 
 # run four times turning off / on condition
 # once on all works (raw) 
@@ -274,18 +286,26 @@ setwd(paste(wd,'nodes_ALL',sep = "/"))
 # raw_sub <- NULL
 # raw_w  <- NULL
 raw_sub_w <- NULL
+
 for(i in 1:length(files)){ 
   work  <- files[i]
+  
   # only files where top pair was calculated 
+  
   if (work %in% meta_mc.df$ID){
+    
     # only files written by women authors 
+    
     if (work %in% meta_w.df$ID){
       nodes <- data.frame(read.csv(files[i]))
       genders <- data.frame(nodes[,3]) 
+      
       # add columns to cbind different books 
+      
       extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200)) 
       colnames(extra) <- colnames(genders)
       genders_bind <- rbind(genders, extra) 
+      
       # raw <- data.frame(cbind(raw, genders_bind[1:150,]))
       # raw_sub <- data.frame(cbind(raw_sub, genders_bind[1:150,]))
       # raw_w <- data.frame(cbind(raw_w, genders_bind[1:150,]))
@@ -295,6 +315,7 @@ for(i in 1:length(files)){
 }
 
 # clean vectors to normalize factors --> characters
+
 clean_func  <- function(df){
   v <- df[,1]
   clean <- gsub(3, 'M', v)
@@ -308,6 +329,7 @@ raw_w[,1] <- clean_func(raw_w)
 raw_sub_w[,1] <- clean_func(raw_sub_w)
 
 # count up sums for each rank position
+
 rank_func  <- function(x){
   ranks <- NULL
   for (i in 1:nrow(x)){
@@ -315,7 +337,9 @@ rank_func  <- function(x){
     mr <- length(which(x[i,] == 'M')) # how many men
     q  <- length(which(x[i,] == '?')) # how many q
     all <- mr + wr + q
+    
     # adjust women and men 
+    
     women  <- wr + epi_add(wr,all,se_2, sp_2)
     men  <- mr + epi_add(mr,all,se_2m, se_2m)
     temp <- data.frame(women,men,q,all) #cbind for storage
@@ -333,11 +357,13 @@ ranks_sub_w  <- rank_func(raw_sub_w)
 
 # basic counts by subsets
 # how many unknown overall?
+
 perc_unknown10 <- sum(ranks_all$q[1:10])/sum(ranks_all$all[1:10])
 perc_unknown20 <- sum(ranks_all$q[1:20])/sum(ranks_all$all[1:20])
 
 # BUILD 
 # run on all works
+
 figure_2 <- ggplot(data=ranks_all, aes(x=rank, y=cumulative_q)) +
   geom_line()+
   ggtitle("% Unassigned Characters by Mentions Rank")+
@@ -348,13 +374,17 @@ figure_2 <- ggplot(data=ranks_all, aes(x=rank, y=cumulative_q)) +
         text = element_text(size = 11, family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11))
+```
 
+
+```{r }
 # ------------------------
 # SECTION II: VISIBILITY
 # ------------------------
 
 # bootstrapper 
-# x is column on df to be sampled, y is df 
+# x is column on df to be sampled, y is df
+
 boot_func <- function(x,y){
   sample <- as.character(sample(x, nrow(y), replace = TRUE))
   return(sample)
@@ -395,9 +425,7 @@ epi_func2 <- function(vector,w,m,se,sp){
 # chars_all  <- NULL
 chars_20 <- NULL
 for (i in 1:nlevels(metadata.df$genre)){
-  setwd(wd)
   files <- list.files('nodes_ALL')
-  setwd(paste(getwd(),('nodes_ALL'),sep = "/"))
   #loop through each file
   meta_sub <- metadata.df[metadata.df$genre == levels(metadata.df$genre)[i],]
   titles  <- files[files %in% meta_sub$ID]
@@ -406,9 +434,11 @@ for (i in 1:nlevels(metadata.df$genre)){
   for(j in 1:length(titles)){ 
     work <- titles[j]
     nodes <- data.frame(read.csv(titles[j]))
+    
     # genders  <- as.character(nodes[,3])
     # for 20 chars run these lines 
     # make sure work has 20 chars
+    
     if (nrow(nodes) >= 20){
       genders <- as.character(nodes[1:20,3])
     } else {
@@ -419,26 +449,35 @@ for (i in 1:nlevels(metadata.df$genre)){
     chars <- data.frame(rbind(temp_chars,chars))
   }
   chars_20  <- data.frame(rbind(chars_20, chars))
+  
   # chars_all <- data.frame(rbind(chars_all, chars))
 }
+```
 
+
+```{r }
 # 1a: ADJUSTMENTS
 # - - - - - - - - - 
 
 # how many M / ? need to be replaced with Fs?
+
 men_rep2  <- epi_func(chars_20$genders, 'M', 'F', '?', se_2m, sp_2m)
 q_rep2  <- (epi_func(chars_20$genders, 'F', 'M', '?', se_2, sp_2))-abs(men_rep2)
 
 # randomly replace M 
+
 rep_m20 <- sample(which(chars_20$gender == 'M'), men_rep2)
 chars_20$adj_all <- replace(as.character(chars_20$gender), rep_m20, 'F')
+
 # randomly replace ?
+
 rep_q20 <- sample(which(chars_20$adj_all == '?'), q_rep2)
 chars_20$adj_all <- replace(as.character(chars_20$adj_all), rep_q20, 'F')
 
 
 # BOOTSTRAP 
 # calculate the percentage of 'F' with bootstrapping 
+
 # boot_chars_20 <- vector()
 boot_chars_all  <- vector()
 for (j in 1:10000){  
@@ -448,7 +487,9 @@ for (j in 1:10000){
   boot_chars_20[j] <- f_perc
   # boot_chars_all[j] <- f_perc
 }
+```
 
+```{r }
 # 1b: REPORTED VALUES
 # - - - - - - - - - - 
 length(which(chars_20$genders == 'F')) # raw women
@@ -458,6 +499,7 @@ mean(boot_chars_20) # bootstrap mean - top 20
 mean(boot_chars_all) # bootstrap mean - all 
 
 # by genre and ag 
+
 chars_func  <- function(x){
   results <- NULL
   for (i in 1:nlevels(x)){
@@ -477,13 +519,18 @@ chars_func  <- function(x){
 }
 
 # by genre and author gender 
+
 boot_chars_genre <- chars_func(chars_20$genre)
 
 # remove romance
+
 chars_20xROM <- chars_20[which(chars_20$genre != 'ROM'),]
 boot_chars_ag <- chars_func(chars_20xROM$ag)
 boot_chars_ag_wROM <- chars_func(chars_20$ag)
+```
 
+
+```{r }
 # 1d: SIGNIFICANCE TESTING
 # - - - - - - - - - - - - - 
 chisq_20  <- t(data.frame(cbind('women'=num_func(boot_chars_genre$f), 'all'=num_func(boot_chars_genre$all))))
@@ -497,25 +544,31 @@ fisher.test(chisq_20_ag)
 # - - - - - - - - 
 table_2  <- data.frame(cbind('genre'=as.character(boot_chars_genre$genre), 'percent_w'=num_func(boot_chars_genre$f_perc)*100))
 table_2 <- table_2[order(num_func(table_2$percent_w)),]
+```
 
+
+```{r }
 
 # 1f: FIGURE THREE & FOUR
 # - - - - - - - - - - - - -
 
 # DATA 
 # from ranks_sub, update the first and second character based on perspective calcs
+
 ranks_sub[1,1:2]  <- c(623, 617)
 ranks_sub[2,1:2]  <- c(470, 768)
 ranks_sub_w[1,1:2]  <- c(321,194)
 ranks_sub_w[2,1:2]  <- c(191,324)
 
 # get correct percentages of women 
+
 ranks_sub$perc_w  <- ranks_sub$w/ranks_sub$all
 ranks_sub_w$perc_w  <- ranks_sub_w$w/ranks_sub_w$all
 
 # BUILD 
 # figure 3 
 # uses only works with main character identified 
+
 figure_3 <- ggplot(data=ranks_sub, aes(rank)) + 
   geom_line(aes(y = women, colour = "Women")) + 
   geom_line(aes(y = men, colour = "Men")) +
@@ -531,6 +584,7 @@ figure_3 <- ggplot(data=ranks_sub, aes(rank)) +
   geom_vline(xintercept = 20, linetype = "dashed") 
 
 # figure 4 
+
 figure_4 <- ggplot(data=ranks_sub_w, aes(rank)) + 
   geom_line(aes(y = women, colour = "Women")) + 
   geom_line(aes(y = men, colour = "Men")) +
@@ -545,7 +599,10 @@ figure_4 <- ggplot(data=ranks_sub_w, aes(rank)) +
         axis.text.x=element_text(size = 11)) +
   geom_vline(xintercept = 20, linetype = "dashed") 
 
+```
 
+
+```{r }
 # 2: MAIN CHARACTER & TOP PAIRS
 # = = = = = = = = = = = = = = = = = = 
 
@@ -557,7 +614,9 @@ setwd(wd)
 files <- list.files('nodes_ALL')
 token_files  <- list.files('tokens_ALL')
 top_chars2 <- NULL
+
 #loop through each file
+
 for(i in 1:length(files)){ 
   setwd('~/Desktop/hierarchy/hierarchy_data/nodes_ALL')
   print(i)
@@ -605,39 +664,51 @@ for(i in 1:length(files)){
   temp_pairs <- data.frame(cbind(work,first,second,ag,genre,pov))
   top_chars2 <- data.frame(rbind(temp_pairs,top_chars2))
 }
+```
 
+
+```{r }
 
 # 2b: ADJUSTMENTS
 # - - - - - - - - -
 
 # calculate how many to add based on validation 
+
 adj_3p <- epi_func(top_chars2$first, 'F', 'M', se_1, sp_1)
 adj_1p <- epi_func(top_chars2$first, 1, 2, se_1b, sp_1b)
 all_adj <- epi_func(top_chars2$second, 'F', 'M', se_1, sp_1)
 
 # replace protagonists in 3p books
+
 rep_first <- sample(which(top_chars2$first == 'M'), adj_3p)
 top_chars2$adj_first <- replace(as.character(top_chars2$first), rep_first, 'F')
+
 # for protagonists in 1p books 
+
 rep_firstb <- sample(which(top_chars2$first == 2), adj_1p)
 top_chars2$adj_first <- replace(as.character(top_chars2$adj_first), rep_firstb, 1)
 
 # change all indicators from numeric --> characters 
+
 top_chars2$first  <- gsub(1, 'F', top_chars2$first)
 top_chars2$first  <- gsub(2, 'M', top_chars2$first)
 top_chars2$adj_first  <- gsub(1, 'F', top_chars2$adj_first)
 top_chars2$adj_first  <- gsub(2, 'M', top_chars2$adj_first)
+
 # replace
+
 rep_second <- sample(which(top_chars2$second == 'M'), all_adj)
 top_chars2$adj_second <- replace(as.character(top_chars2$second), rep_second, 'F')
 
 # clean all errors & subset
+
 top_chars3  <- top_chars2[which(top_chars2$adj_first != 'error_M'),]
 top_chars3  <- top_chars3[which(top_chars3$adj_first != 0),]
 top_chars_1p  <- top_chars3[top_chars3$pov == '1p',]
 top_chars_3p  <- top_chars3[top_chars3$pov == '3p',]
 
 # calculate top pairs by genre and author gender 
+
 tp_func  <- function(x,y){
   results <- NULL
   for (i in 1:nlevels(x)){
@@ -664,6 +735,7 @@ tp_func  <- function(x,y){
       vectors  <- data.frame(cbind(f,m,mm,ff,mm_m,ff_f, m_perc,f_perc,mm_perc,ff_perc))
       temp  <- rbind(temp,vectors)
     }
+    
     mean_f <- mean(temp$f)
     mean_m <- mean(temp$m)
     mean_mm  <- mean(temp$mm)
@@ -675,7 +747,9 @@ tp_func  <- function(x,y){
     mean_ff_f  <- mean(temp$ff_f)
     mean_mm_m  <- mean(temp$mm_m)
     temp_tp <- data.frame(cbind(titles, group, mean_f, mean_m, mean_mm, mean_ff, 
-                                mean_m_perc, mean_f_perc, mean_mm_perc, mean_ff_perc, mean_ff_f, mean_mm_m))
+                                mean_m_perc, mean_f_perc, mean_mm_perc, mean_ff_perc,
+                                mean_ff_f, mean_mm_m))
+    
     results <- data.frame(rbind(results, temp_tp))
   }
   return(results)
@@ -683,13 +757,19 @@ tp_func  <- function(x,y){
 
 boot_tp_genre  <- tp_func(top_chars3$genre, 'NA')
 boot_tp_ag  <- tp_func(top_chars3$ag, 'ROM')
+```
 
+
+```{r }
 # 2c: TABLE 3 & 4
 # - - - - - - - -  
-table_3 <- data.frame(cbind('women'=num_func(boot_tp_genre$mean_f), 'perc_women'=num_func(boot_tp_genre$mean_f_perc)), row.names = boot_tp_genre$group)
+
+table_3 <- data.frame(cbind('women'=num_func(boot_tp_genre$mean_f),
+                            'perc_women'=num_func(boot_tp_genre$mean_f_perc)),
+                      row.names = boot_tp_genre$group)
 
 table_4  <- data.frame(cbind('genre'=as.character(boot_tp_genre$group), 
-                             'perc_same_gender'=(num_func(boot_tp_genre$mean_ff)+num_func(boot_tp_genre$mean_mm))/num_func(boot_tp_genre$titles),
+                        'perc_same_gender'=(num_func(boot_tp_genre$mean_ff) + num_func(boot_tp_genre$mean_mm))/num_func(boot_tp_genre$titles),
                              'ratio'=num_func(boot_tp_genre$mean_mm)/num_func(boot_tp_genre$mean_ff)))
 
 table_4 <- table_4[order(num_func(table_4$ratio)),]
@@ -704,6 +784,7 @@ boot_mc_1p <- vector()
 boot_mc_3p  <- vector()
 
 # all main characters
+
 for (i in 1:10000){
   sample <- boot_func(top_chars3$adj_first, top_chars3)
   sample_perc <- length(which(sample == 'F'))/length(sample)
@@ -712,6 +793,7 @@ for (i in 1:10000){
 mean_mc  <- mean(boot_mc)
 
 # 1p main characters (homodiegetic)
+
 for (i in 1:10000){
   sample <- boot_func(top_chars_1p$adj_first, top_chars_1p)
   sample_perc <- length(which(sample == 'F'))/length(sample)
@@ -720,6 +802,7 @@ for (i in 1:10000){
 mean_mc_1p  <- mean(boot_mc_1p)
 
 # 3p main character (heterodiegetic)
+
 for (i in 1:10000){
   sample <- boot_func(top_chars_3p$adj_first, top_chars_3p)
   sample_perc <- length(which(sample == 'F'))/length(sample)
@@ -728,6 +811,7 @@ for (i in 1:10000){
 mean_mc_3p  <- mean(boot_mc_3p)
 
 # second character
+
 boot_sc  <- vector()
 for (i in 1:10000){
   sample <- boot_func(top_chars3$adj_second, top_chars3)
@@ -737,6 +821,7 @@ for (i in 1:10000){
 mean_sc  <- mean(boot_sc)
 
 # second character in books by women 
+
 boot_sc_w  <-  vector()
 for (i in 1:10000){
   sub  <- top_chars3[top_chars3$ag == 'F',]
@@ -747,11 +832,13 @@ for (i in 1:10000){
 mean_sc_w  <- mean(boot_sc_w)
 
 # how many ff given f and mm given m? 
+
 ff_f <- sum(num_func(boot_tp_genre$mean_ff))/sum(num_func(boot_tp_genre$mean_f))
 mm_m  <- sum(num_func(boot_tp_genre$mean_mm))/sum(num_func(boot_tp_genre$mean_m))
 
 # for author gender
 # how many for each by women 
+
 ff_pairs_w <- num_func(boot_tp_ag$mean_ff[1])
 mm_pairs_w <- num_func(boot_tp_ag$mean_mm[1])
 # by men 
@@ -762,10 +849,12 @@ mm_pairs_m <- num_func(boot_tp_ag$mean_mm[2])
 # - - - - - - - - - - - - - 
 
 # by genre
+
 chsq_mc <- t(cbind(num_func(boot_tp_genre$mean_f), (num_func(boot_tp_genre$title))))[,1:7]
 chisq.test(chsq_mc) 
 
 # bu author gender 
+
 chsq_mc_ag  <- t(cbind(num_func(boot_tp_ag$mean_f[1:2]), (num_func(boot_tp_ag$title[1:2]))))
 chisq.test(chsq_mc_ag)
 fisher.test(chsq_mc_ag)
