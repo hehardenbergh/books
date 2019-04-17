@@ -15,9 +15,10 @@ knitr::opts_chunk$set(echo = TRUE)
 # paths. Turns out that was confusing for my directories because of how I wanted
 # to organize the authors' original data.
 
-wd <- "/Users/hehardenbergh/books" # set working directory
+wd <- "/Users/hehardenbergh/books"
 setwd(wd)
 
+# source("books.data/hierarchy_adj.r")
 ```
 
 ```{r}
@@ -181,7 +182,12 @@ mentions <- NULL
 
 # mentions_sub <- NULL
 
+# set working directory to where the data lives.
+
+setwd('/Users/hehardenbergh/books/books.data')
+
 for(j in 1:length(files)){
+  
   work  <- files[j]
   
   # only files where main character gender was identified
@@ -231,7 +237,9 @@ rank_m_sub <- NULL
 # }
 
 # BUILD  
+
 # run on all works 
+
 figure_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
   geom_point()+
   ggtitle("Mean Mentions by Rank")+
@@ -242,6 +250,8 @@ figure_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
         text = element_text(size = 11, family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11))
+
+print(figure_1)
 ```
 
 
