@@ -1,7 +1,8 @@
 # Books
 
 ## Replication code for "Social Characters: The Hierarchy of Gender in Contemporary English-Language Fiction"
-### Authors: Eve Kraicer and Andrew Piper [http://culturalanalytics.org/2019/01/social-characters-the-hierarchy-of-gender-in-contemporary-english-language-fiction/] 
-#### 01.30.19
+### Authors: Eve Kraicer and Andrew Piper
+#### Published 01/30/19
+http://culturalanalytics.org/2019/01/social-characters-the-hierarchy-of-gender-in-contemporary-english-language-fiction/
 
-This is a backup repo for Hardenbergh's final project in Gov 1006, Models.
+This is the repository for Hardenbergh's final project in Gov 1006, Models.
