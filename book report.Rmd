@@ -15,8 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # paths. Turns out that was confusing for my directories because of how I wanted
 # to organize the authors' original data.
 
-# wd <- "/Users/hehardenbergh/books"
-# setwd(wd)
+
 
 # source("books.data/hierarchy_adj.r")
 ```
@@ -62,6 +61,7 @@ library(tidyverse)
 ```
 
 ```{r }
+
 # unzip the folders nodes_ALL and edges_ALL.
 
 # get rid of all working directory calls. manually set path directories for each
@@ -73,6 +73,10 @@ library(tidyverse)
 # dont know why this function is here. It makes numeric strings character
 # strings, but why??? --> turning factor variables into numeric. You can't do it
 # though because of the way that factors are shown internally in R.
+
+# This function is probably used to turn factor variables into numeric. You
+# can't do that by just going straight to numeric because of the way that
+# factors are represented internally in R.
 
 num_func  <- function(x){as.numeric(as.character(x))}
 
@@ -251,7 +255,7 @@ for (i in 1:nrow(mentions)){
 
 # run on all works 
 
-figure_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
+ggplot(data=rank_m, aes(x=rank, y=mean)) +
   geom_point()+
   ggtitle("Mean Mentions by Rank")+
   labs(x="Character Rank by Mentions", y="Mean Mentions")+
@@ -272,9 +276,8 @@ figure_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
 
 # DATA
 # calculates raw counts of M/ W/ ? by rank position 
-# setwd(wd)
-files <- list.files('nodes_ALL')
-# setwd(paste(wd,'nodes_ALL',sep = "/"))
+
+files <- list.files('./books.data/nodes_ALL')
 
 # run four times turning off / on condition
 # once on all works (raw) 
@@ -282,9 +285,13 @@ files <- list.files('nodes_ALL')
 # once on all works by women (raw_w) 
 # once on only works by women with main character identified by gender (raw_sub_w)
 
-# raw <- NULL
-# raw_sub <- NULL
-# raw_w  <- NULL
+# what you should do is make a vector with accurate dimensions if you know it,
+# with NA's. but the authors just create objects with empty space to use later
+# using NULL.
+
+raw <- NULL
+raw_sub <- NULL
+raw_w  <- NULL
 raw_sub_w <- NULL
 
 for(i in 1:length(files)){ 
@@ -297,7 +304,8 @@ for(i in 1:length(files)){
     # only files written by women authors 
     
     if (work %in% meta_w.df$ID){
-      nodes <- data.frame(read.csv(files[i]))
+      
+      nodes <- data.frame(read_csv(paste0('books.data/nodes_ALL/', (files[j]))))
       genders <- data.frame(nodes[,3]) 
       
       # add columns to cbind different books 
@@ -306,9 +314,9 @@ for(i in 1:length(files)){
       colnames(extra) <- colnames(genders)
       genders_bind <- rbind(genders, extra) 
       
-      # raw <- data.frame(cbind(raw, genders_bind[1:150,]))
-      # raw_sub <- data.frame(cbind(raw_sub, genders_bind[1:150,]))
-      # raw_w <- data.frame(cbind(raw_w, genders_bind[1:150,]))
+      raw <- data.frame(cbind(raw, genders_bind[1:150,]))
+      raw_sub <- data.frame(cbind(raw_sub, genders_bind[1:150,]))
+      raw_w <- data.frame(cbind(raw_w, genders_bind[1:150,]))
       raw_sub_w  <- data.frame(cbind(raw_sub_w, genders_bind[1:150,]))
     }
   }
@@ -323,6 +331,7 @@ clean_func  <- function(df){
   clean <- gsub(1, '?', clean)
   return(clean)
 }
+
 raw[,1] <- clean_func(raw)
 raw_sub[,1] <- clean_func(raw_sub)
 raw_w[,1] <- clean_func(raw_w)
