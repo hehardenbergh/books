@@ -160,7 +160,7 @@ table_1_tidy %>%
              perc_w = "% Women Authors",
              genre = "Genre") %>% 
   fmt_number(columns = perc_w, 
-             decimals = 1)
+             decimals = 2)
 
 
 ```
@@ -184,14 +184,12 @@ mentions <- NULL
 
 # set working directory to where the data lives.
 
-setwd('/Users/hehardenbergh/books/books.data')
+setwd("/Users/hehardenbergh/books/books.data/nodes_ALL")
+files <- list.files('nodes_ALL')
 
 for(j in 1:length(files)){
   
   work  <- files[j]
-  
-  # only files where main character gender was identified
-  # if (work %in% meta_mc.df$ID){
   
   nodes <- data.frame(read_csv(files[j]))
   
