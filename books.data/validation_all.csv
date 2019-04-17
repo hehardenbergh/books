@@ -1,0 +1,202 @@
+x,work,NAME,X..MENTIONS...100K.WORDS,GENDER,VALIDATION,ERROR,ERROR.TYPE,X
+1,"""2006_Behrens	Peter_LawofDreams_PW.txt.csv""",Phoebe,126.435854,F,F,,,NA
+2,"""2006_Wagner	Bruce_TheChrysanthemumPalace_PW.txt.csv""",Clea,465.7410246,F,F,,,NA
+3,"""2008_Hemon	Aleksandar_TheLazarusProject_PW.txt.csv""",Isaac,70.48415322,M,M,,,NA
+4,"""2008_Leavitt	David_TheIndianClerk_PW.txt.csv""",Norton,117.0500925,M,M,,,NA
+5,"""2009_Echlin	Kim_Disappeared_PW.txt.csv""",Pol Pot,69.35803023,M,?,X,np as m,NA
+6,"""2009_Mawer	Simon_GlassRoom_PW.txt.csv""",Katalin,108.136133,M,F,X,f as m,NA
+7,"""2009_McCann	Colum_LetTheGreatWorldSpin_PW.txt.csv""",Claire,453.3416777,F,F,,,NA
+8,"""2010_Gerritsen	Tess_IceCold_MY.txt.csv""",Jane,1110.155086,F,F,,,NA
+9,"""2010_Goodman	Carol_ArcadiaFalls_MY.txt.csv""",Tori,49.49444955,F,F,,,NA
+10,"""2010_Livingston	Lesley_Tempestuous.txt.csv""",Gwynn,147.4891167,M,F,X,f as m,NA
+11,"""2010_Obreht	Tea_TheTigersWife_BS.txt.csv""",Amana,33.79550976,?,F,X,f as u,NA
+12,"""2010_Pfeffer	SusanBeth_ThisWorldWeLiveIn_SF.txt.csv""",Matt,625.0536373,M,M,,,NA
+13,"""2010_Philbin	Joanna_TheDaughters.txt.csv""",Todd,1007.694217,M,M,,,NA
+14,"""2010_Roberts	Nora_SavortheMoment_BS.txt.csv""",Sarah,22.87506944,F,F,,,NA
+15,"""2011_Baldacci	David_TheSixthMan_BS.txt.csv""",Avery,88.21943768,M,M,,,NA
+16,"""2011_Bezmozgis	David_TheFreeWorld_PW.txt.csv""",Karl,506.7585254,M,M,,,NA
+17,"""2011_Endicott	Marina_LittleShadows_PW.txt.csv""",Verrall,312.2337292,M,M,,,NA
+18,"""2011_Johnson	Jean_ASoldiersDuty_SF.txt.csv""",Liu Ji,36.82188998,M,M,,,NA
+19,"""2011_Preston	Douglas_ColdVengeance_BS.txt.csv""",Jennings,96.15769863,M,M,,,NA
+20,"""2011_Revis	Beth_AcrosstheUniverse_SF.txt.csv""",Ward,49.72246745,M,M,,,NA
+21,"""2011_Scalzi	John_FuzzyNation_SF.txt.csv""",Mr. Holloway,216.2186511,M,M,,,NA
+22,"""2011_Slonczewski	Joan_TheHighestFrontier_SF.txt.csv""",Priscilla,66.41057361,F,F,,,NA
+23,"""2011_SpencerFleming	Julia_OneWasASoldier_MY.txt.csv""",McNabb,248.3312998,M,M,,,NA
+24,"""2012_Barclay	Linwood_TrustYourEyes_MY.txt.csv""",Len,161.5372189,M,M,,,NA
+25,"""2012_Brogan	Tracy_CrazyLittleThing_ROM.txt.csv""",Des,751.4225962,F,F,,,NA
+26,"""2012_Crouch	Blake_Pines_SF.txt.csv""",Theresa,457.2437029,F,F,,,NA
+27,"""2012_Despain	Bree_TheSavageGrace.txt.csv""",James,94.86986718,M,M,,,NA
+28,"""2012_Gould	Steven_Impulse_SF.txt.csv""",Grant,338.5455634,M,M,,,NA
+29,"""2012_Hobbs	Roger_Ghostman_MY.txt.csv""",Alexander Lakes,85.76861076,M,M,,,NA
+30,"""2012_Kellerman	Jonathan_Victims_MY.txt.csv""",Biro,109.4800287,M,M,,,NA
+31,"""2012_Kress	Nancy_AftertheFall_SF.txt.csv""",Eduardo,134.1363983,M,M,,,NA
+32,"""2012_Naam	Ramez_Nexus_SF.txt.csv""",Ana,105.0993893,F,F,,,NA
+33,"""2012_Roberts	Nora_PerfectHope_BS.txt.csv""",Lizzy,289.0551714,F,F,,,NA
+34,"""2012_Scottoline	Lisa_ComeHome_MY.txt.csv""",Courtney,57.54918505,M,F,X,f as m,NA
+35,"""2012_Snyder	Maria_InsideOut.txt.csv""",Logan,416.0625355,M,M,,,NA
+36,"""2012_Snyder	Maria_ScentofMagic.txt.csv""",Sepp,147.8749988,M,M,,,NA
+37,"""2012_Sorensen	Jessica_CoincidenceofCallie_BS.txt.csv""",Caleb,103.5592877,M,M,,,NA
+38,"""2012_Unger	Lisa_Heartbroken_MY.txt.csv""",Richard Cameron,129.7687836,M,M,,,NA
+39,"""2012_Williams	WalterJon_TheFourthWall_SF.txt.csv""",Julian,67.91283967,M,M,,,NA
+40,"""2013_Asher	Neal_TheDeparture_SF.txt.csv""",Braddock,210.6816248,M,M,,,NA
+41,"""2013_Bonert	Kenneth_LionSeeker_PW.txt.csv""",Silas,140.4309737,M,M,,,NA
+42,"""2013_Crain	Caleb_NecessaryErrors_CT.txt.csv""",Daniel,100.2776047,M,M,,,NA
+43,"""2013_Grisham	John_SycamoreRow_BS.txt.csv""",Ancil,166.141338,M,M,,,NA
+44,"""2013_Landay	William_DefendingJacob_CT.txt.csv""",Newton,38.36609417,?,?,,,NA
+45,"""2013_Lynn	J_WaitForYou_BS.txt.csv""",Steph,72.49418139,F,F,,,NA
+46,"""2013_Mather	Matthew_TheDystopiaChronicles_SF.txt.csv""",Kesselring,118.6428849,M,M,,,NA
+47,"""2013_Picoult	Jodi_TheStoryteller_BS.txt.csv""",Reiner Hartmann,69.75623367,M,M,,,NA
+48,"“2013_Pratchett	Terry_TheLongEarth_SF.txt.csv”",Helen,45.14273938,F,F,,,NA
+49,"""2014_Abani	Chris_TheSecretHistoryofLasVegas_MY.txt.csv""",Sunil,2816.627313,M,M,,,NA
+50,"""2014_Baskin	Nora_SubwayLove.txt.csv""",Laura,3229.131706,F,F,,,NA
+51,"""2014_Carey	MR_TheGirlWithAlltheGifts_SF.txt.csv""",Sarge,26.04189272,M,M,,,NA
+52,"""2014_Chance	Megan_TheShadows.txt.csv""",Rose,261.3098154,M,F,X,f as m,NA
+53,"""2014_Coover	Robert_TheBrunistDayofWrath_CT.txt.csv""",Elaine,183.649196,F,F,,,NA
+54,"""2014_Deriso	Christine_ThirtySunsets.txt.csv""",Jake,86.72838837,M,M,,,NA
+55,"""2014_Elliot	Kendra_Alone_ROM.txt.csv""",Jennifer,148.6249399,F,F,,,NA
+56,"""2014_French	Tana_TheSecretPlace_MY.txt.csv""",Moran,44.64950141,M,M,,,NA
+57,"""2014_Harber	Cristin_SweetGirl_ROM.txt.csv""",Nicola,3761.736123,F,F,,,NA
+58,"""2014_Heasley	Gwendolyn_TheArtofGoodbye.txt.csv""",Rudy,44.07616361,M,M,,,NA
+59,"""2014_Holden	Kim_BrightSide_ROM.txt.csv""",Franco,44.03210481,M,M,,,NA
+60,"""2014_Itani	Frances_Tell_PW.txt.csv""",Melba,168.9485145,F,F,,,NA
+61,"""2014_Itaranta	Emmi_MemoryofWater_SF.txt.csv""",Moonfeast,26.33970315,?,?,,,NA
+62,"""2014_Jacobson	Howard_J_CT.txt.csv""",Gutkind,431.4407595,M,M,,,NA
+63,"""2014_Karsak	Melanie_ChasingtheGreenFairy_SF.txt.csv""",Kent,103.9655428,M,M,,,NA
+64,"""2014_King	Stephen_Revival_CT.txt.csv""",Reverend Jacobs,64.41170641,M,M,,,NA
+65,"""2014_Long	Christopher_HeroWorship.txt.csv""",Brett,20.64480611,M,M,,,NA
+66,"""2014_Martin	Valerie_TheGhostoftheMaryCeleste_CT.txt.csv""",Sophy,67.02348694,?,F,X,f as u,NA
+67,"""2014_McPherson	Catriona_TheDaySheDied_MY.txt.csv""",Steve,273.1281399,M,M,,,NA
+68,"""2014_Paige	Danielle_DorothyMustDie.txt.csv""",Oz,133.5493866,?,?,,,NA
+69,"""2014_Papernick	Jonathan_TheBookofStone_MY.txt.csv""",Yossi,88.15533118,M,M,,,NA
+70,"""2014_Rossi	Veronica_IntotheStillBlue.txt.csv""",Perry,4054.626681,M,M,,,NA
+71,"""2014_Savage	Sam_ItWillEndWithUs_CT.txt.csv""",Louis Staunton,35.53479872,M,M,,,NA
+72,"""2014_Sharma	Akhil_FamilyLife_CT.txt.csv""",Jeff,159.6666472,M,M,,,NA
+73,"""2014_Sherratt	Mel_WatchingOverYou_MY.txt.csv""",Ruby,55.37223704,F,F,,,NA
+74,"""2014_Smiley	Jane_SomeLuck_CT.txt.csv""",Joe,399.1431727,M,M,,,NA
+75,"""2014_Toews	Miriam_AllMyPunySorrows_CT.txt.csv""",Will,76.86148919,M,M,,,NA
+76,"""2014_Walker	Casey_LastDaysinSHanghai_CT.txt.csv""",Li-Li,440.4425471,F,F,,,NA
+77,"""2014_Walton	Leslye_TheStrangeandBeautifulSorrowsofAvaLavender.txt.csv""",Cardigan,192.2200706,M,F,X,f as m,NA
+78,"""2014_Wilson	DanielH_Robogenesis_SF.txt.csv""",Takeo,58.15209264,M,M,,,NA
+79,"""2014_Zink	Nell_TheWallcreeper_CT.txt.csv""",Rudi,161.5359764,M,M,,,NA
+80,"""2015_Corey	JamesSA_NemesisGames_SF.txt.csv""",Marco,274.2840199,M,M,,,NA
+81,"""2015_Foor	Jennifer_Binge_ROM.txt.csv""",Dr. Langston,3.075219878,?,M,X,m as u,NA
+82,"""2015_Frank	Ella_Trust_ROM.txt.csv""",Mr. Morrison,49.33036651,M,M,,,NA
+83,"""2015_Green	Simon_TheDarkSideoftheRoad_MY.txt.csv""",Alex,69.36683495,?,M,X,m as u,NA
+84,"""2015_Hinton	Lynne_TheCaseoftheSinCitySister_MY.txt.csv""",Ms. Gallegos,53.65298297,F,F,,,NA
+85,"""2015_Jaff	Sophie_LoveisRed_MY.txt.csv""",Phil,24.10140117,F,M,X,m as f,NA
+86,"""2015_James	Nicole_WOLF_ROM.txt.csv""",Wolf,3477.986022,M,M,,,NA
+87,"""2015_Johnson	Craig_DryBones_MY.txt.csv""",Ruby,67.75407779,F,F,,,NA
+88,"""2015_Kennedy	Elle_TheDeal_ROM.txt.csv""",Mary Jane,45.42935281,F,F,,,NA
+89,"""2015_Malpas	JodiEllen_OneNightUnveiled_ROM.txt.csv""",Nan,437.5689606,F,F,,,NA
+90,"""2015_Morrison	Toni_God_Help_the_Child_CT.txt.csv""",Louis Armstrong,41.08674439,M,M,,,NA
+91,"""2015_Mosteller	MistiD_TheFatRules_ROM.txt.csv""",Heather,552.0405089,F,F,,,NA
+92,"""2015_Pierce	M_AfterDark_ROM.txt.csv""",Gail,26.90532159,F,F,,,NA
+93,"""2015_Pulley	DM_TheDeadKey_MY.txt.csv""",Carmichael,99.76746506,M,M,,,NA
+94,"""2015_Quick	Amanda_GardenofLies_MY.txt.csv""",Mr. Roxton,90.04445945,M,M,,,NA
+95,"""2015_Ryan	Carrie_DaughterofDeepSilence_MY.txt.csv""",Caldwell,18.10173173,M,M,,,NA
+96,"""2015_Ryan	Kendall_TheGentlemanMentor_ROM.txt.csv""",Kirby,609.6874648,M,M,,,NA
+97,"""2015_Scottoline	Lisa_EveryFifteenMinutes_MY.txt.csv""",Mrs. Teichner,56.9747925,F,F,,,NA
+98,"""2015_Shea	Rebecca_BrokenbyLies_ROM.txt.csv""",Megan,86.8490005,F,F,,,NA
+99,"""2010_Godbersen	Anna_BrightYoungThings.txt.csv""",Mrs. Marsh,40.06677796,F,F,,,NA
+100,"""2010_Hopkins	Ellen_Fallout.txt.csv""",Nikki,469.922469,F,F,,,NA
+101,"""2010_Mead	Richelle_SpiritBound.txt.csv""",Serena,64.90432339,F,F,,,NA
+102,"""2011_Mahoney	Karen_TheIronWitch.txt.csv""",Paige,124.3240814,M,F,X,f as m,NA
+103,"""2011_Park	Jessica_Flat-OutLove.txt.csv""",Julie,4322.25714,F,F,,,NA
+104,"""2011_Verday	Jessica_TheHidden.txt.csv""",Sophie,136.1904167,F,F,,,NA
+105,"""2012_Green	John_TheFaultinOurStars.txt.csv""",Lidewij,97.18899522,?,F,X,f as u,NA
+106,"""2012_Oliver	Lauren_Pandemonium.txt.csv""",Sarah,262.464425,F,F,,,NA
+107,"""2012_Snyder	Maria_InsideOut.txt.csv""",Trella,107.1676228,M,F,X,f as m,NA
+108,"""2013_Rush	Jennifer_Altered.txt.csv""",Dad,320.9017609,M,M,,,NA
+109,"""2014_Hawkins	Rachel_RebelBelle.txt.csv""",Brandon,136.1095175,M,M,,,NA
+110,"""2014_Jordan	Sophie_Uninvited.txt.csv""",Coco,54.07678904,M,F,X,f as m,NA
+111,"""2014_Kenyon	Sherrilyn_Illusion.txt.csv""",Zavid,91.02564103,?,M,X,m as u,NA
+112,"""2014_Lord	Emery_OpenRoadSummer.txt.csv""",Corinne,201.132387,F,F,,,NA
+113,"""2014_Paige	Danielle_DorothyMustDie.txt.csv""",Dorothy,1340.835841,F,F,,,NA
+114,"""2002_Baker	Jo_Offcomer_CT.txt.csv""",Joseph,35.85977394,M,M,,,NA
+115,"""2013_Atwood	Margaret_MaddAddam_CT.txt.csv""",Glenn,181.7812875,M,M,,,NA
+116,"""2013_Johnston	Wayne_TheSonofaCertainWoman_CT.txt.csv""",Mary Aggie,137.8344832,F,F,,,NA
+117,"""2013_Moore	Lisa_Caught_CT.txt.csv""",Patterson,751.4742663,M,M,,,NA
+118,"""2013_Peace	David_RedorDead_CT.txt.csv""",Kop,80.0580506,?,?,,,NA
+119,"""2013_Phillips	JayneAnne_QuietDell_CT.txt.csv""",Mr. Malone,125.1379109,M,M,,,NA
+120,"""2014_Adler	HG_TheWall_CT.txt.csv""",Eva,41.41883774,F,F,,,NA
+121,"""2014_Ford	Richard_LetmebeFrankwithYou_CT.txt.csv""",Ezekiel,79.97470567,M,M,,,NA
+122,"""2014_Lazar	Zachary_IPitythePoorImmigrant_CT.txt.csv""",Buddy,277.6469005,M,M,,,NA
+123,"""2014_Lee	ChangRae_OnSuchaFullSea_CT.txt.csv""",Vik,277.9544643,M,M,,,NA
+124,"""2014_Moran	Caitlin_HowtoBuildaGirl_CT.txt.csv""",Rob,54.99180311,M,M,,,NA
+125,"""2014_Rieger	Susan_TheDivorcePapers_CT.txt.csv""",David Greaves,195.897784,M,M,,,NA
+126,"""2015_Hemmings	KauiHart_ThePossibilities_CT.txt.csv""",Horace,136.2774342,M,M,,,NA
+127,"""2015_Kanon	Joseph_LeavingBerlin_CT.txt.csv""",Ivan,234.8796242,M,M,,,NA
+128,"""2015_Yanagihara	Hanya_ALittleLife_CT.txt.csv""",Harold,1313.361159,M,M,,,NA
+129,"""2011_Sandford	John_BuriedPrey_MY.txt.csv""",Carter,76.87986043,M,M,,,NA
+130,"""2011_Watson	SJ_BeforeIGotoSleep_MY.txt.csv""",Toby,39.29201276,M,M,,,NA
+131,"""2012_Crais	Robert_Taken_MY.txt.csv""",Fredo,86.82839552,M,M,,,NA
+132,"""2012_Kellerman	Jonathan_Victims_MY.txt.csv""",Sloat,84.75873192,?,M,X,m as u,NA
+133,"""2012_Robotham	Michael_SayYoureSorry_MY.txt.csv""",Alice,77.82453283,F,F,,,NA
+134,"""2013_Fairstein	Linda_DeathAngel_MY.txt.csv""",Lavinia,265.7916926,F,F,,,NA
+135,"""2013_SpencerFleming	Julia_ThroughtheEvilDays_MY.txt.csv""",Hudson,99.42788219,M,M,,,NA
+136,"""2014_Connelly	Michael_TheBurningRoom_MY.txt.csv""",Spivak,86.85555464,M,M,,,NA
+137,"""2014_Penny	Louise_TheLongWayHome_MY.txt.csv""",Stuart,180.0824894,M,M,,,NA
+138,"""2014_Robb	JD_FestiveinDeath_MY.txt.csv""",Robbins,71.11076944,F,F,,,NA
+139,"""2014_Smith	AlexanderMccall_TheHandsomeMansDeLuxe_MY.txt.csv""",Clovis Andersen,47.16588519,M,M,,,NA
+140,"""2014_Sternbergh	Adam_ShovelReady_MY.txt.csv""",T. K. Harrow,57.48618477,M,M,,,NA
+141,"""2015_Ahlborn	Ania_WithinTheseWalls_MY.txt.csv""",Lou,105.3882726,M,M,,,NA
+142,"""2015_Stokes	Paula_LiarsInc_MY.txt.csv""",Violet Cain,95.01886994,F,F,,,NA
+143,"""2015_Swyler	Erika_TheBookofSpeculation_MY.txt.csv""",Enola,304.4990701,?,F,X,f as u,NA
+144,"""2010_Cronin	Justin_ThePassage_SF.txt.csv""",Alicia,485.031619,F,F,,,NA
+145,"""2010_Maberry	Jonathan_RotandRuin_SF.txt.csv""",Marion,105.0567306,F,F,,,NA
+146,"""2010_Willis	Connie_AllClear_SF.txt.csv""",Colin,198.5459189,M,M,,,NA
+147,"""2012_Boudinot	Ryan_BlueprintsoftheAfterlife_SF.txt.csv""",Bionet,54.45603526,?,?,,,NA
+148,"""2012_Mead	Richelle_TheImmortalCrown_SF.txt.csv""",Odin,58.46221595,?,M,X,m as u,NA
+149,"""2013_Istvan	Zoltan_TheTranshumanistWager_SF.txt.csv""",Oliver,61.77636954,M,M,,,NA
+150,"""2013_Monk	Devon_ColdCopper_SF.txt.csv""",Cedar,1091.656998,M,M,,,NA
+151,"""2013_Wilson	RobertCharles_BurningParadise_SF.txt.csv""",John,16.21271077,M,M,,,NA
+152,"""2014_Cambias	JamesL_ADarklingSea_SF.txt.csv""",Vikram Sen,94.49515461,M,M,,,NA
+153,"""2014_Ingermanson	RS_Transgression_SF.txt.csv""",Temple Mount,85.25391458,?,?,,,NA
+154,"""2014_Nuttall	Christopher_ArkRoyal_SF.txt.csv""",Smith,103.3513063,M,M,,,NA
+155,"""2015_Chu	Wesley_TheRebirthspfTao_SF.txt.csv""",Vladimir,216.061843,M,M,,,NA
+156,"""2015_Greenfeld	KarlTaro_TheSubprimes_SF.txt.csv""",Jinx,86.90137868,?,M,X,m as u,NA
+157,"""2015_McCammon	Robert_TheBorder_SF.txt.csv""",Cypher,90.73162685,?,?,,,NA
+158,"""2015_Rotter	Jeffrey_TheOnlyWords_SF.txt.csv""",Sylvia,388.9969436,F,F,,,NA
+159,"""2008_Grisham	John_TheAppeal_BS.txt.csv""",Jared Kurtin,121.2187497,M,M,,,NA
+160,"""2009_Stockett	Kathryn_TheHelp_BS.txt.csv""",Baby Girl,57.50359397,F,F,,,NA
+161,"""2009_Verghese	Abraham_CuttingforStone_BS.txt.csv""",Marion,119.6372598,F,F,,,NA
+162,"""2011_Brown	Sandra_Lethal_BS.txt.csv""",Doral,558.9507292,M,M,,,NA
+163,"""2011_Clancy	Tom_AgainstAllEnemies_BS.txt.csv""",Jorge,73.55294408,M,M,,,NA
+164,"""2011_Clancy	Tom_LockedOn_BS.txt.csv""",Nigel Embling,98.91866283,M,M,,,NA
+165,"""2011_Cussler	Clive_Jungle_BS.txt.csv""",Gunawan Bahar,47.95651942,M,M,,,NA
+166,"""2011_Harris	Charlaine_DeadReckoning_BS.txt.csv""",Bubba,96.46432851,M,M,,,NA
+167,"""2011_Preston	Douglas_ColdVengeance_BS.txt.csv""",Helen,188.3088265,F,F,,,NA
+168,"""2011_Rothfuss	Patrick_WiseMansFear_BS.txt.csv""",Simmon,65.92438825,F,M,X,m as f,NA
+169,"""2012_Day	Sylvia_BaredtoYou_BS.txt.csv""",Cross,104.851872,M,M,,,NA
+170,"""2012_Flynn	Gillian_GoneGirl_BS.txt.csv""",Desi,304.0941778,M,M,,,NA
+171,"""2013_Jordan	Robert_AMemoryofLight_BS.txt.csv""",Rand,383.7465409,F,M,X,m as f,NA
+172,"""2014_Paige	Laurelin_TheFixedTrilogy_BS.txt.csv""",Hudson,3436.702084,M,M,,,NA
+173,"""2014_Patterson	James_Private1Suspect_BS.txt.csv""",Jinx,98.25997953,M,F,X,f as m,NA
+174,"""2012_Elliot	Kendra_Hidden_ROM.txt.csv""",Ray,384.4159014,M,M,,,NA
+175,"""2013_Elliot	Kendra_Buried_ROM.txt.csv""",Phillip,87.16590941,M,M,,,NA
+176,"""2013_Reynard	Sylvain_GabrielsRedemption_ROM.txt.csv""",Gabriel,3718.299445,M,M,,,NA
+177,"""2013_Simsion	Graeme_TheRosieProject_ROM.txt.csv""",Daphne,112.736509,F,F,,,NA
+178,"""2014_Jewel	Bella_TilDeathVolumeOne_ROM.txt.csv""",Ellie,81.71957803,F,F,,,NA
+179,"""2014_Noble	Olivia_DeadlyLust_ROM.txt.csv""",AFIP,8.56433241,?,?,,,NA
+180,"""2015_Alexander	Victoria_TheDaringExploitsofaRunawayHeiress_ROM.txt.csv""",Cameron,740.9166469,M,M,,,NA
+181,"""2015_Hart	Emma_DirtyPast_ROM.txt.csv""",Sof,39.05364207,?,F,X,f as u,NA
+182,"""2015_Jewel	Bella_TilDeath_ROM.txt.csv""",Christian Grey,32.11230131,M,M,,,NA
+183,"""2015_Lain	Tara_KnightofOceanAvenue_ROM.txt.csv""",Giles,317.5105229,M,M,,,NA
+184,"""2015_McLean	Jay_WhereTheRoadTakesMe_ROM.txt.csv""",Mary,396.4964135,F,F,,,NA
+185,"""2015_Roberts	Nora_TheLiar_ROM.txt.csv""",Griffin,68.24400877,M,M,,,NA
+186,"""2015_Smart	Michelle_TheGreeksPregnantBride_ROM.txt.csv""",Villa Mondelli,16.86024728,?,?,,,NA
+187,"""2015_Smeltzer	Micalea_NeverTooLate_ROM.txt.csv""",Lana,107.2810764,F,F,,,NA
+188,"""2015_Wood	Jessica_PromisetoMarry_ROM.txt.csv""",Betty,682.1282401,F,F,,,NA
+189,"""2005_Bergen	David_TheTimeinBetween_PW.txt.csv""",Tomas,198.5945616,M,M,,,NA
+190,"""2006_Grenville	Kate_SecretRiver_PW.txt.csv""",Willie,211.9762086,M,M,,,NA
+191,"""2007_Gowdy	Barbara_Helpless_PW.txt.csv""",Nancy,1463.384539,F,F,,,NA
+192,"""2009_Crummey	Michael_Galore_PW.txt.csv""",Newman,470.2358146,M,M,,,NA
+195,"""2009_Price	Richard_LushLife_PW.txt.csv""",Tristan,230.6515166,M,M,,,NA
+196,"""2012_TwanEng	Tan_TheGardenofEveningMists_PW.txt.csv""",Teruzen,33.52062316,?,?,,,NA
+197,"""2013_AlireSaenz	Benjamin_EverythingBeginsandEndsattheKentucky_PW.txt.csv""",Nick,35.5733234,M,M,,,NA
+198,"""2013_Kushner	Rachel_Flamethrowers_PW.txt.csv""",Chesil Jones,44.01122647,M,M,,,NA
+199,"""2013_McAdam	Colin_ABeautifulTruth_PW.txt.csv""",Podo,316.4965767,F,M,X,m as f,NA
+200,"""2013_Ozeki	Ruth_TaleforTimeBeing_PW.txt.csv""",Harry,34.26932895,M,M,,,NA
+201,"""2013_Toibin	Colm_TheTestamentofMary_PW.txt.csv""",Marcus,507.5389916,M,M,,,NA
+202,"""2014_Itani	Frances_Tell_PW.txt.csv""",Maggie,1847.170425,F,F,,,NA
+203,"""2014_Toews	Miriam_AllmyPunySorrows_PW.txt.csv""",Yoli,58.7130108,?,F,X,f as u,NA
