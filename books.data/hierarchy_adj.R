@@ -19,14 +19,10 @@
 library(caret)
 library(e1071)
 
-# working directory
-wd<-paste("~/Desktop/hierarchy/hierarchy_data")
-# set working directory 
-setwd(wd)
 
 # SENSITIVITY AND SPECIFICITY FOR ALL CHARACTERS (men and women)
 # read in df 
-validation_2 <- data.frame(read.csv("validation_all.csv", sep=","))
+validation_2 <- data.frame(read.csv("./books.data/validation_all.csv", sep=","))
 
 # calculate for women
 # change all 'M' labels to '?' to create a 2x2 matrix of women and not women
@@ -54,7 +50,7 @@ sp_2m <- cm_2m$byClass[[2]]
 
 ### SENSITIVITY AND SPECIFICITY FOR THIRD PERSON 
 # read in df and make confusion matrix
-validation_1 <- data.frame(read.csv("validation_tp.csv"), row.names = NULL)
+validation_1 <- data.frame(read.csv("./books.data/validation_tp.csv"), row.names = NULL)
 cm_1 <- confusionMatrix(validation_1$GENDER, validation_1$CHECK, positive = 'F')
 
 # calculate sensitivity and specificity based on above values 
@@ -63,7 +59,7 @@ sp_1 <- cm_1$byClass[[2]]
 
 # SENSITIVITY AND SPECIFICITY FOR FIRST PERSON 
 # read in df, remove unspecified cases 
-validation_1b <- data.frame(read.csv("validation_1p.csv"), row.names = NULL)
+validation_1b <- data.frame(read.csv("./books.data/validation_1p.csv"), row.names = NULL)
 validation_1b <- validation_1b[validation_1b$GENDER != '?',]
 validation_1b$GENDER <- factor(validation_1b$GENDER)
 # make confusion matrix 
