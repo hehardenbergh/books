@@ -15,7 +15,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # paths. Turns out that was confusing for my directories because of how I wanted
 # to organize the authors' original data.
 
-
+# as the author's readme says, you will need the functions and objects listed in
+# this sourced file:
 
 source("./books.data/hierarchy_adj.r")
 ```
@@ -64,10 +65,12 @@ library(tidyverse)
 
 # unzip the folders nodes_ALL and edges_ALL.
 
+unzip("./books.data/edges_ALL.zip")
+unzip("./books.data/nodes_ALL.zip")
+
 # get rid of all working directory calls. manually set path directories for each
 # file read-in. when you get rid of it, just be careful about where you are
 # trying to grab files from. sometimes they are in different places.
-
 
 
 # dont know why this function is here. It makes numeric strings character
@@ -83,6 +86,9 @@ num_func  <- function(x){as.numeric(as.character(x))}
 # ------------------------
 # SECTION I: DATA
 # ------------------------
+
+# this function is used for figure 2- running a Rogan and Gladen's approach to
+# testing for the true prevalence of how many women are included in the dataset.
 
 epi_add  <- function(pos, tested, se, sp){
   epi  <- (epi.prev(pos, tested, se_2, sp_2)$tp[[1]])*.01
@@ -287,7 +293,7 @@ files <- list.files('./books.data/nodes_ALL')
 
 # what you should do is make a vector with accurate dimensions if you know it,
 # with NA's. but the authors just create objects with empty space to use later
-# using NULL.
+# using NULL. 
 
 raw <- NULL
 raw_sub <- NULL
@@ -322,7 +328,9 @@ for(i in 1:length(files)){
   }
 }
 
-# clean vectors to normalize factors --> characters
+# clean vectors to normalize factors --> characters. This function will make
+# gender identifiers. It does so by using gsub(), which replaces the numbers 1,
+# 2, or 3 with 'M', 'F', or '?'.
 
 clean_func  <- function(df){
   v <- df[,1]
@@ -338,26 +346,53 @@ raw_w[,1] <- clean_func(raw_w)
 raw_sub_w[,1] <- clean_func(raw_sub_w)
 
 # count up sums for each rank position
+x <- NULL
 
 rank_func  <- function(x){
   ranks <- NULL
   for (i in 1:nrow(x)){
     wr <- length(which(x[i,] == 'F')) # how many women
     mr <- length(which(x[i,] == 'M')) # how many men
-    q  <- length(which(x[i,] == '?')) # how many q
+    q  <- length(which(x[i,] == '?')) # how many unknown
     all <- mr + wr + q
     
     # adjust women and men 
     
-    women  <- wr + epi_add(wr,all,se_2, sp_2)
-    men  <- mr + epi_add(mr,all,se_2m, se_2m)
-    temp <- data.frame(women,men,q,all) #cbind for storage
-    ranks <-data.frame(rbind(ranks,temp))
+    women  <- wr + epi_add(wr,
+                           all,
+                           se_2, 
+                           sp_2)
+    men  <- mr + epi_add(mr,
+                         all,
+                         se_2m,
+                         se_2m)
+    temp <- data.frame(women,
+                       men,
+                       q,
+                       all) 
+    #cbind for storage
+    ranks <-data.frame(rbind(ranks,
+                             temp))
   }
+  
   ranks$rank <- 1:150
   ranks$cumulative_q  <- cumsum(ranks$q)/cumsum(ranks$all)
   return(ranks)
 }
+
+# here, the code is using the rank_func function that the authors create in
+# hierarchy_adj.r, which is sourced at the beginning of this code. It makes the
+# estimates for true prevalence tests that validate that some gender assignments
+# in books are inaccurate. as in, on page 8 of the paper when authors discuss
+# the proportions of accurately assigned and inaccurately assigned gender
+# identifiers (male, female, or unknown.) Basically, this means that if there is
+# a higher sensitivity rate for one gender, that means they have been assigned
+# more accurately. when men have this higher rate, it accounts for the
+# possibility of women being undercounted in the dataset after they have
+# assigned gender identifiers manually.
+
+# in order to run properly, apparent prevalence can't be less than (1 - Sp),
+# otherwise the estimate of true prevalance will be "invalid".
 
 ranks_all <- rank_func(raw)
 ranks_sub  <- rank_func(raw_sub)
@@ -434,18 +469,24 @@ epi_func2 <- function(vector,w,m,se,sp){
 # once for all 
 # once for only characters in the top twnety 
 
-# chars_all  <- NULL
+chars_all  <- NULL
 chars_20 <- NULL
+
 for (i in 1:nlevels(metadata.df$genre)){
-  files <- list.files('nodes_ALL')
+  files <- list.files('./books.data/nodes_ALL')
+  
   #loop through each file
+  
   meta_sub <- metadata.df[metadata.df$genre == levels(metadata.df$genre)[i],]
   titles  <- files[files %in% meta_sub$ID]
+  
   # loop through each file
+  
   chars <- NULL
   for(j in 1:length(titles)){ 
     work <- titles[j]
-    nodes <- data.frame(read.csv(titles[j]))
+    nodes <- data.frame(read_csv(paste0('/books.data/nodes_ALL/', (titles[j]))))
+
     
     # genders  <- as.character(nodes[,3])
     # for 20 chars run these lines 
@@ -465,6 +506,12 @@ for (i in 1:nlevels(metadata.df$genre)){
   # chars_all <- data.frame(rbind(chars_all, chars))
 }
 ```
+
+
+
+
+
+
 
 
 ```{r }
