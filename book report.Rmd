@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-# set working directory here, with a line of code in its own chunk. Whenever a
+# Whenever a
 # file is read in or a folder is accessed in other chunks, I make sure that the
 # correct working directory is called. originally, the authors organized their
 # code with setwd() so that they didn't have to manually code all the file
@@ -115,7 +115,7 @@ meta_w.df  <- metadata.df[metadata.df$ag == 'F',]
 # What/Where is it? (Command-shift-f finds every place something is mentioned in
 # the project...)
 
-tokens_files <- list.files('tokens_ALL')
+# tokens_files <- list.files('tokens_ALL')
 
 nodes_list <- c('nodes_YA', 'nodes_NYT', 'nodes_MY', 'nodes_SF',
                 'nodes_BS', 'nodes_ROM', 'nodes_PW')
@@ -136,12 +136,13 @@ edges_list <- c('edges_YA', 'edges_NYT', 'edges_MY', 'edges_SF',
 
 genre_levels <- unique(metadata.df$genre)
 
+files <- list.files('books.data/nodes_ALL')
+
 data_info <- NULL
 for (i in 1:length(genre_levels)){
   
   # find the data in the correct file path/working directory:
   
-  files <- list.files('books.data/nodes_ALL')
   meta_sub <- metadata.df[metadata.df$genre == genre_levels[i],]
   
   # Start to make columns with data
@@ -175,7 +176,9 @@ table_1_tidy <- table_1 %>%
                    "Young Adult",
                    "Romance"))
 
+
 table_1_tidy %>%
+  mutate(perc_w = as.numeric(as.character(perc_w))) %>% 
   gt() %>%
   cols_move_to_start(columns = vars(genre)) %>%
   cols_label(code = "Code", 
@@ -183,8 +186,7 @@ table_1_tidy %>%
              no_authors = "# Authors",
              perc_w = "% Women Authors",
              genre = "Genre") %>% 
-  fmt_number(columns = perc_w, 
-             decimals = 2)
+  fmt_number(columns = vars(perc_w), decimals = 2)
 
 
 ```
@@ -311,7 +313,7 @@ for(i in 1:length(files)){
     
     if (work %in% meta_w.df$ID){
       
-      nodes <- data.frame(read_csv(paste0('books.data/nodes_ALL/', (files[j]))))
+      nodes <- data.frame(read_csv(paste0('books.data/nodes_ALL/', (files[i]))))
       genders <- data.frame(nodes[,3]) 
       
       # add columns to cbind different books 
@@ -346,11 +348,15 @@ raw_w[,1] <- clean_func(raw_w)
 raw_sub_w[,1] <- clean_func(raw_sub_w)
 
 # count up sums for each rank position
-x <- NULL
+
+gender_id <- unique(raw[i])
+
 
 rank_func  <- function(x){
   ranks <- NULL
+
   for (i in 1:nrow(x)){
+    
     wr <- length(which(x[i,] == 'F')) # how many women
     mr <- length(which(x[i,] == 'M')) # how many men
     q  <- length(which(x[i,] == '?')) # how many unknown
@@ -421,6 +427,9 @@ figure_2 <- ggplot(data=ranks_all, aes(x = rank, y = cumulative_q)) +
         text = element_text(size = 11, family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x = element_text(size = 11))
+
+figure_2
+
 ```
 
 
@@ -442,6 +451,7 @@ boot_func <- function(x,y){
 epi_func <- function(vector,w,m,q,se,sp){
   pos <- length(which(as.character(vector) == w))
   tested <- length(which(as.character(vector) == w | as.character(vector) == m | as.character(vector) == q)) 
+  
   epi <- epi.prev(pos, tested, se, sp)
   adj_perc <- epi$tp[[1]]*.01
   adj_add <- round((tested*adj_perc)-pos)
@@ -452,13 +462,20 @@ epi_func <- function(vector,w,m,q,se,sp){
 epi_func2 <- function(vector,w,m,se,sp){
   pos <- length(which(as.character(vector) == w))
   tested <- length(which(as.character(vector) == w | as.character(vector) == m)) # original sample set 
+  
   epi <- epi.prev(pos, tested, se, sp)
+  
   # find percentage increase of women for true prevalence of women as main character
+  
   adj_perc <- epi$tp[[1]]*.01
   # how many more women is that? 
   adj_add <- round((tested*adj_perc)-pos)
   return(adj_add)
 }
+```
+
+
+```{r }
 
 # 1: TOP 20 & ALL 
 # = = = = = = = = = 
@@ -506,9 +523,6 @@ for (i in 1:nlevels(metadata.df$genre)){
   # chars_all <- data.frame(rbind(chars_all, chars))
 }
 ```
-
-
-
 
 
 
@@ -608,7 +622,7 @@ table_2 <- table_2[order(num_func(table_2$percent_w)),]
 
 ```{r }
 
-# 1f: FIGURE THREE & FOUR
+# 1f: FIGURES THREE & FOUR
 # - - - - - - - - - - - - -
 
 # DATA 
@@ -669,7 +683,7 @@ figure_4 <- ggplot(data=ranks_sub_w, aes(rank)) +
 # - - - - - - - -
 
 # build master table with genders of top pairs from each document 
-setwd(wd)
+
 files <- list.files('nodes_ALL')
 token_files  <- list.files('tokens_ALL')
 top_chars2 <- NULL
@@ -929,653 +943,4 @@ ft_tp_ag_m  <- data.frame(c(mm_pairs_m, mm_pairs_m+ff_pairs_m), c(mm_pairs_w,ff_
 fisher.test(ft_tp_ag_w)
 fisher.test(ft_tp_ag_m)
 sum(num_func(chsq_tp_ag))
-
-
-# -------------------------
-# SECTION III: CONNECTIVITY
-# -------------------------
-
-# anova test
-anova_func<-function(x,y,z){
-  df2 <- data.frame(cbind(x, as.character(y), as.character(z))) #make df
-  colnames(df2) <- c("m", "genre", "ag") #rename for measures
-  df2$m2 <- num_func(df2$m)#turn to numeric
-  p <- summary(aov(m2 ~ ag + genre + ag:genre, data=df2))[[1]][['Pr(>F)']] #pvalue
-  f <- summary(aov(m2 ~ ag + genre + ag:genre, data=df2))[[1]][['F value']] #fscore
-  summary  <- data.frame(rbind('p-value'=as.character(p[1:3]),'f'=as.character(f[1:3])))
-  colnames(summary) <- c('ag', 'genre', 'ag:genre')
-  return(summary)
-}
-
-# antagonism labelling pairs 
-pair_func  <- function(x,y){
-  pair <- vector()
-  for (j in 1:nrow(y)){
-    c1 <- as.character(x[which(as.character(x$NAME) == as.character(y$NAME.1[j])),3])
-    c2 <- as.character(x[which(as.character(x$NAME) == as.character(y$NAME.2[j])),3])
-    pair[j] <- paste(c1,c2, sep = '')
-  }
-  return(pair)
-}
-
-
-# 1: ASSORTATIVITY
-# = = = = = = = = =
-
-# 1a: adjustments 
-# - - - - - - - - - - - - - 
-
-# loop to to get adjustments on nodes lists 
-setwd(wd)
-files <- list.files('nodes_ALL')
-setwd(paste(getwd(),('nodes_ALL'),sep = "/"))
-bootstrap_files <- NULL
-for (j in 1:length(files)){
-  work <- as.character(files[j])
-  nodes <- read.csv(files[j])
-  pos <- length(which(nodes$GENDER == 'F'))
-  tested <- nrow(nodes)
-  if (pos < 1) {adj_add <- 0} else {
-    epi <- epi.prev(pos, tested, se_2, sp_2)
-    # find percentage increase of women for true prevalence of women as main character
-    adj_perc <- epi$tp[[1]]*.01
-    # how many more women is that? 
-    adj_add <- round((tested*adj_perc)-pos)
-  }
-  temp <- data.frame(cbind(work,'adj_add'=num_func(adj_add), 'no_chars'=tested))
-  bootstrap_files <- data.frame(rbind(temp,bootstrap_files))
-}
-bootstrap_files$adj_add <- num_func(bootstrap_files$adj_add)
-bootstrap_files$work <- as.character(bootstrap_files$work)
-
-# split into files that need to be bootstrapped and those that do not
-files_noboot <- bootstrap_files$work[which(bootstrap_files$adj_add > 0)]
-files_boot <- bootstrap_files$work[which(bootstrap_files$adj_add <= 0)]
-
-
-# 1b: CALCULATE ASSORTATIVITY
-# - - - - - - - - - - - - - - 
-
-# calculate assortativity three ways - no bootstrap, bootstrap, and a control w permutations
-# no bootstrap
-setwd(wd)
-files_n <- list.files("nodes_ALL")
-files_e <- list.files("edges_ALL")
-assort1 <- NULL
-for (i in 1:length(files_e)){
-  work <- files_e[i]
-  if (work %in% files_noboot){
-    genre <- as.character(top_chars$code[(which(top_chars$work %in% work))])
-    if (is.null(genre)) {genre  <- 'catch'}
-    ag <- as.character(metadata.df$ag[(which(metadata.df$ID %in% work))])
-    # nodes 
-    setwd(paste((wd),('nodes_ALL'),sep = "/"))
-    nodes <- read.csv(files_n[i])
-    setwd(paste((wd),('edges_ALL'),sep = "/"))
-    # edges 
-    edges <- read.csv(files_e[i])
-    edge1 <- data.frame(source=edges$NAME.1, target=edges$NAME.2) 
-    #build graphs
-    g <- graph.data.frame(edge1, directed=FALSE, vertices=NULL)#graph
-    gw <- graph.adjacency(get.adjacency(g),mode=c("undirected"), weighted=TRUE)
-    #basic information
-    no_nodes <- length(V(gw))
-    no_edges <- length(E(gw)) 
-    no_ints <- length(E(g))
-    #assortativity
-    char_list <- sort(as_ids(V(g)), decreasing = F)
-    nodes <- nodes[order(nodes$NAME),]
-    nodes <- nodes[as.character(nodes$NAME) %in% char_list,]
-    #give gender labels to vertices
-    V(g)$name <- as_ids(V(g))
-    V(gw)$name <- as_ids(V(gw))
-    # atleast one man, and not zero women 
-    V(g)$gender <- as.character(nodes$GENDER[match(V(g)$name,nodes$NAME)])
-    V(gw)$gender <- as.character(nodes$GENDER[match(V(gw)$name,nodes$NAME)])
-    g_clean <- delete_vertices(g, which(V(g)$gender == "?"))
-    gw_clean <- delete_vertices(gw, which(V(gw)$gender == "?"))
-    # measures on all edges
-    assort_int_all <- assortativity.nominal(g_clean, as.factor(V(g_clean)$gender))
-    assort_rel_all <- assortativity.nominal(gw_clean, as.factor(V(gw_clean)$gender))
-    # measures on subsets using helper function
-    assort_int_20 <- assort_func(g_clean, g_clean, 20)
-    assort_rel_20 <- assort_func(g_clean, gw_clean, 20)
-    assort_int_10 <- assort_func(g_clean, g_clean, 10)
-    assort_rel_10 <- assort_func(g_clean, gw_clean, 10)
-    temp.df <- data.frame(work, genre, ag, no_nodes, no_edges, no_ints, assort_int_all, assort_rel_all, 
-                          assort_int_10, assort_rel_10, assort_int_20, assort_rel_20)
-    assort1 <- rbind(assort1, temp.df)
-  }
-}
-
-# bootstrap 
-setwd(wd)
-files_n <- list.files('nodes_ALL')
-files_e <- list.files('edges_ALL')
-assort2 <- NULL
-for (i in 1:length(files_e)){
-  work <- files_n[i]
-  if (work %in% files_boot){
-    genre <- as.character(top_chars$code[(which(top_chars$work %in% work))])
-    ag <- as.character(metadata.df$ag[(which(metadata.df$ID %in% work))])
-    setwd(paste((wd),('edges_ALL'),sep = "/"))
-    edges <- read.csv(files_e[i])
-    edge1 <- data.frame(source=edges$NAME.1, target=edges$NAME.2) 
-    g <- graph.data.frame(edge1, directed=FALSE, vertices=NULL)
-    gw <- graph.adjacency(get.adjacency(g),mode=c("undirected"), weighted=TRUE)
-    #basic information
-    no_nodes <- length(V(gw))
-    no_edges <- length(E(gw)) 
-    no_ints <- length(E(g))
-    # fix nodes 
-    setwd(paste((wd),('nodes_ALL'),sep = "/"))
-    nodes <- read.csv(files_n[i])
-    #assortativity
-    char_list <- sort(as_ids(V(g)), decreasing = F)
-    nodes <- nodes[order(nodes$NAME),]
-    nodes <- nodes[as.character(nodes$NAME) %in% char_list,]
-    #give gender labels to vertices
-    V(g)$name <- as_ids(V(g))
-    V(gw)$name <- as_ids(V(gw))
-    # calculate replacement using epi_prev based on # of nodes
-    # find percentage increase of women for true prevalence of women as main character
-    # how many more women is that? 
-    adj_add <- as.character(bootstrap_files$adj_add[(which(bootstrap_files$work %in% work))])
-    # empty vectors 
-    int_all <- vector()
-    int_20 <- vector()
-    int_10 <- vector()
-    rel_all <- vector()
-    rel_20 <- vector()
-    rel_10 <- vector()
-    for (j in 1:1000){
-      # randomly sample the number of added women from the number of non-women and replace integers with 'F's
-      # for first char
-      rep <- sample(which(nodes$GENDER != 'F'), adj_add)
-      nodes$adj_GENDER <- replace(as.character(nodes$GENDER), rep, 'F')
-      # for permutation turn these two lines off
-      V(g)$gender <- as.character(nodes$adj_GENDER[match(V(g)$name,nodes$NAME)])
-      V(gw)$gender <- as.character(nodes$adj_GENDER[match(V(gw)$name,nodes$NAME)])
-      g_clean <- delete_vertices(g, which(V(g)$gender == "?"))
-      gw_clean <- delete_vertices(gw, which(V(gw)$gender == "?"))
-      # measures on all edges
-      int_all[j] <- assortativity.nominal(g_clean, as.factor(V(g_clean)$gender))
-      rel_all[j] <- assortativity.nominal(gw_clean, as.factor(V(gw_clean)$gender))
-      # measures on top 20 edges using helper function 
-      int_20[j] <- assort_func(g_clean, g_clean, 20)
-      rel_20[j] <- assort_func(g_clean, gw_clean, 20)
-      int_10[j] <- assort_func(g_clean, g_clean, 10)
-      rel_10[j] <- assort_func(g_clean, gw_clean, 10)
-    }
-    assort_int_all <- mean(int_all)
-    assort_int_20 <- mean(int_20)
-    assort_int_10 <- mean(int_10)
-    assort_rel_all <- mean(rel_all)
-    assort_rel_20 <- mean(rel_20)
-    assort_rel_10 <- mean(rel_10)
-    temp.df <- data.frame(work, genre, ag, no_nodes, no_edges, no_ints, assort_int_all, assort_rel_all, 
-                          assort_int_10, assort_rel_10, assort_int_20, assort_rel_20)
-    assort2 <- rbind(assort2, temp.df)
-  }
-}
-
-assort_ALL <- data.frame(rbind(assort1,assort2))
-
-# control 
-boot_assort_mean <- NULL
-for (i in 1:1000){
-  setwd(wd)
-  files_n <- list.files("nodes_ALL")
-  files_e <- list.files("edges_ALL")
-  boot_assort <- NULL
-  for (i in 1:length(files_e)){
-    work <- files_n[i]
-    setwd(paste((wd),('edges_ALL'),sep = "/"))
-    edges <- read.csv(files_e[i])
-    edge1 <- data.frame(source=edges$NAME.1, target=edges$NAME.2) 
-    g <- graph.data.frame(edge1, directed=FALSE, vertices=NULL)#graph
-    gw <- graph.adjacency(get.adjacency(g),mode=c("undirected"), weighted=TRUE)
-    # fix nodes 
-    setwd(paste((wd),('nodes_ALL'),sep = "/"))
-    nodes <- read.csv(files_n[i])
-    adj_add <- bootstrap_files$adj_add[(which(bootstrap_files$work %in% work))]
-    if (adj_add > 1){
-      rep <- sample(which(nodes$GENDER != 'F'), adj_add)
-      nodes$adj_GENDER <- replace(as.character(nodes$GENDER), rep, 'F')
-    } else {nodes$adj_GENDER <- nodes$GENDER}
-    # subset 
-    char_list <- sort(as_ids(V(g)), decreasing = F)
-    nodes <- nodes[nodes$NAME %in% char_list,]
-    # randomly shuffle
-    gender_orig <- as.character(nodes$adj_GENDER)
-    gender_permute <- sample(gender_orig, length(gender_orig))
-    V(g)$gender <- gender_permute
-    V(gw)$gender <- gender_permute
-    g_clean <- delete_vertices(g, which(V(g)$gender == "?"))
-    gw_clean <- delete_vertices(gw, which(V(gw)$gender == "?"))
-    # measures on all edges
-    assort_int_all <- assortativity.nominal(g_clean, as.factor(V(g_clean)$gender))
-    assort_rel_all <- assortativity.nominal(gw_clean, as.factor(V(gw_clean)$gender))
-    # measures on subsets using helper function
-    assort_int_20 <- assort_func(g_clean, g_clean, 20)
-    assort_rel_20 <- assort_func(g_clean, gw_clean, 20)
-    assort_int_10 <- assort_func(g_clean, g_clean, 10)
-    assort_rel_10 <- assort_func(g_clean, gw_clean, 10)
-    temp <- data.frame(work, assort_int_all, assort_rel_all, 
-                       assort_int_10, assort_rel_10, assort_int_20, assort_rel_20)
-    boot_assort <- rbind(boot_assort, temp)
-  }
-  int_all <- mean(boot_assort$assort_int_all, na.rm=T)
-  int_20 <- mean(boot_assort$assort_int_20,na.rm=T)
-  int_10 <- mean(boot_assort$assort_int_10,na.rm=T)
-  rel_all <- mean(boot_assort$assort_rel_all,na.rm=T)
-  rel_20 <- mean(boot_assort$assort_rel_20,na.rm=T)
-  rel_10 <- mean(boot_assort$assort_rel_10,na.rm=T)
-  boot_temp <- data.frame(int_all,int_20,int_10,rel_all,rel_20,rel_10)
-  boot_assort_mean <-rbind(boot_assort_mean, boot_temp)
-}
-
-# 1c: REPORTED VALUES
-# - - - - - - - - - - 
-
-# remove infinite values from _10 sets 
-rel_10_finite <- lapply(assort_ALL, function(x) x[is.finite(x)])$assort_rel_10
-int_10_finite <- lapply(assort_ALL, function(x) x[is.finite(x)])$assort_int_10
-
-# 
-# for relationships
-mean(assort_ALL$assort_rel_all, na.rm = TRUE) < quantile(boot_assort_mean$rel_all, 0.05) # false
-mean(assort_ALL$assort_rel_20, na.rm = TRUE) < quantile(boot_assort_mean$rel_20, 0.05) # false
-mean(rel_10_finite) < quantile(boot_assort_mean$rel_10, 0.05) # true, but between .01 and .05 
-
-# for interactions
-mean(assort_ALL$assort_int_all, na.rm = TRUE) < min(boot_assort_mean$int_all) # true
-mean(assort_ALL$assort_int_20, na.rm = TRUE) < min(boot_assort_mean$int_20) # true
-mean(int_10_finite) < min(boot_assort_mean$int_10)
-
-# 1d: SIGNIFICANCE TESTING (table 5 generated from this section)
-# - - - - - - - - - - - - -
-
-# calculate anova values on three subsets for genre
-assort_anovas  <- NULL # all 
-assort_anova_xROM  <- NULL # no ROM
-assort_anova_xOUT  <- NULL # no ROM and no YA
-# remove NA's and non finite rows
-assort_xALL  <- assort_ALL[is.finite(rowSums(assort_ALL[,7:12])),]
-assort_xROM  <- assort_xALL[assort_xALL$genre != 'ROM',]
-assort_xOUT  <- assort_xALL[assort_xALL$genre != 'ROM' & assort_xALL$genre != 'YA',]
-for (i in 7:12){
-  df  <- assort_xALL
-  # df  <- assort_xROM
-  # df  <- assort_xOUT
-  label  <- colnames(assort_xALL)[i]
-  # label  <- colnames(assort_xROM)[i]
-  # label  <- colnames(assort_xOUT)[i]
-  measure <- df[i]
-  n  <- nrow(df)
-  aov <- anova_func(measure, df$genre, df$ag)
-  mean  <- mean(measure[,1], na.rm = TRUE)
-  temp  <- cbind(label,aov,mean,n)
-  assort_anovas  <- rbind(assort_anovas, temp)
-  # assort_anova_xROM  <- rbind(assort_anova_xROM, temp)
-  # assort_anova_xOUT  <- rbind(assort_anova_xOUT, temp)
-}
-
-# calculate t.tests for author gender 
-assort_tt_xROM  <- NULL
-for (i in 7:12){
-  df  <- assort_xROM 
-  label  <- colnames(assort_xROM)[i]
-  df$measure <- df[i]
-  n  <- nrow(df)
-  tt  <- t.test(df$measure[df$ag == 'F',], df$measure[df$ag == 'M',], na.action = na.omit)
-  t  <- num_func(tt[1])
-  p  <- num_func(tt[3])
-  m1  <- num_func(tt[[5]][1])
-  sd1  <- sd(df$measure[df$ag == 'F',])
-  m2  <- num_func(tt[[5]][2])
-  sd2  <- sd(df$measure[df$ag == 'M',])
-  temp  <- data.frame(cbind(label,t, p, m1, sd1, m2, sd2))
-  assort_tt_xROM  <- data.frame(rbind(assort_tt_xROM, temp))
-}
-
-
-# 1e: FIGURES 5 & 6
-# - - - - - - - - - 
-
-genres  <- c('YA', 'NYT', 'BS', 'PW', 'MY', 'SF', 'ROM')
-assort_ALL2  <- assort_ALL[assort_ALL$genre %in% genres,]
-
-# figure 5
-assort_rel_bp <- melt(assort_ALL2, id = "genre", measure = c("assort_rel_all", "assort_rel_20", "assort_rel_10"))
-figure_5 <- ggplot(assort_rel_bp, aes(variable, value, position = "dodge", fill = genre)) +
-  geom_boxplot ()+
-  ggtitle(label = "Assortativity of Relationships") +
-  scale_y_continuous(name = "Assortativity Score") + 
-  scale_x_discrete(name = "Genre", labels = c("All", "Top20", "Top10")) +
-  labs(fill="Genre") +
-  theme_bw() +
-  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
-        text = element_text(size = 11, family = "Times New Roman"),
-        axis.title = element_text(face="bold"),
-        axis.text.x=element_text(size = 11)) +
-  scale_fill_brewer(palette = "Set3")
-
-# figure 6
-assort_int_bp <- melt(assort_ALL2, id = "genre", measure = c("assort_int_all", "assort_int_20", "assort_int_10"))
-figure_6 <- ggplot(assort_int_bp, aes(variable, value, position = "dodge", fill = genre)) +
-  geom_boxplot() +
-  ggtitle(label = "Assortativity of Interactions") +
-  scale_y_continuous(name = "Assortativity Score") + 
-  scale_x_discrete(name = "Genre", labels = c("All", "Top20", "Top10")) +
-  theme_bw() +
-  labs(fill='Genre') +
-  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
-        text = element_text(size = 11, family = "Times New Roman"),
-        axis.title = element_text(face="bold"),
-        axis.text.x=element_text(size = 11)) +
-  scale_fill_brewer(palette = "Set3")
-
-
-# 2: ANTAGONISM
-# = = = = = = = = 
-
-# 2a: CALCULATE ANTAGONISM
-# - - - - - - - - - - - - -
-
-# no bootstrap
-setwd(wd)
-files_n <- list.files('nodes_ALL')
-files_e <- list.files('edges_ALL')
-ant1 <- NULL
-for (i in 1:length(files_e)){
-  work <- files_n[i]
-  if (work %in% files_noboot){
-    genre <- as.character(metadata.df$genre[(which(metadata.df$ID %in% work))])
-    ag <- as.character(metadata.df$ag[(which(metadata.df$ID %in% work))])
-    if (is.null(genre)) {genre  <- 'catch'}
-    # nodes 
-    setwd(paste((wd),('nodes_ALL'),sep = "/"))
-    nodes <- read.csv(work)
-    nodes <- nodes[(nodes$GENDER != "?"),] 
-    nodes_20 <- nodes[1:20,]
-    # edges 
-    setwd(paste((wd),('edges_ALL'),sep = "/"))
-    edges <- read.csv(work)
-    edges_20 <- edges[edges$NAME.1 %in% nodes_20$NAME & edges$NAME.2 %in% nodes_20$NAME,1:4]  
-    edges_20$pair <- pair_func(nodes_20,edges_20)
-    mm <- edges_20[edges_20$pair == "MM",] #subset by mm interactions
-    # mixed <- edges_20[edges_20$pair == "MF" | edges_20$pair == "FM",]
-    ww <- edges_20[edges_20$pair == "FF",]
-    mm.sent <- (sum(mm$X..POS))/(sum(mm$X..NEG))
-    # mixed.sent <- (sum(mixed$X..POS))/(sum(mixed$X..NEG))
-    ww.sent <- (sum(ww$X..POS))/(sum(ww$X..NEG))
-    temp.df <- data.frame(work, genre, ag, mm.sent, ww.sent)  
-    ant1 <- rbind(ant1, temp.df)
-  } 
-}
-
-# bootstrap
-setwd(wd)
-files_n <- list.files('nodes_ALL')
-files_e <- list.files('edges_ALL')
-ant2 <- NULL
-for (i in 1:length(files_e)){
-  work <- files_n[i]
-  if (work %in% files_boot){
-    ag <- as.character(metadata.df$ag[(which(metadata.df$ID %in% work))])
-    genre <- as.character(top_chars$code[(which(top_chars$work %in% work))])
-    if (is.null(genre)) {genre  <- 'catch'}
-    # nodes 
-    setwd(paste((wd),('nodes_ALL'),sep = "/"))
-    nodes <- read.csv(files_n[i])
-    nodes <- nodes[(nodes$GENDER != "?"),] #subsets nodes without ?
-    nodes_20 <- nodes[1:20,] #subsets to top 20 
-    # edges 
-    setwd(paste((wd),('edges_ALL'),sep = "/"))
-    edges <- read.csv(files_e[i])
-    edges_20 <- edges[edges$NAME.1 %in% nodes_20$NAME & edges$NAME.2 %in% nodes_20$NAME,1:4]  
-    # how many more women?
-    adj_add <- bootstrap_files$adj_add[(which(bootstrap_files$work %in% work))]
-    # if it's possible to add that many women 
-    if (adj_add < length(which(nodes_20$GENDER != 'F'))){
-      # empty vectors
-      mm_sent <- vector()
-      ww_sent <- vector()
-      for (j in 1:10){
-        # randomly sample the number of added women from the number of non-women and replace integers with 'F's
-        # for first char
-        rep <- sample(which(nodes_20$GENDER != 'F'), adj_add)
-        nodes_20$adj_GENDER <- replace(as.character(nodes_20$GENDER), rep, 'F')
-        edges_20$pair <- pair_func(nodes_20,edges_20)
-        mm <- edges_20[edges_20$pair == "MM",] 
-        mixed <- edges_20[edges_20$pair == "MF" | edges_20$pair == "FM",]
-        ww <- edges_20[ edges_20$pair == "FF",]
-        mm_sent[j] <- (sum(mm$X..POS))/(sum(mm$X..NEG))
-        ww_sent[j] <- (sum(ww$X..POS))/(sum(ww$X..NEG))
-      }
-      mean_mm_sent <- mean(mm_sent)
-      mean_ww_sent <- mean(ww_sent)
-    } else {
-      mean_mm_sent <- 'error'
-      mean_ww_sent <- 'error'
-    }
-    temp.df <- data.frame(work, genre, ag, mean_mm_sent, mean_ww_sent)  
-    ant2 <- rbind(ant2, temp.df)
-  }
-}
-
-colnames(ant2)  <- colnames(ant1)
-ant_ALL <- data.frame(rbind(ant1, ant2))
-ant_ALL  <- ant_ALL[which(ant_ALL$ww.sent != 'error' & ant_ALL$mm.sent != 'error'),]
-
-# 2b: REPORTED VALUES 
-# - - - - - - - - - - 
-
-# means 
-mean(num_func(ant_sent2$value[ant_sent2$variable == 'ww.sent']), na.rm = TRUE) # mean sentiment of women
-mean(num_func(ant_sent2$value[ant_sent2$variable == 'mm.sent']), na.rm = TRUE) # mean sentiment of men
-
-# difference within a genre for BS and NYT
-mean(num_func(ant_sent2$value[ant_sent2$genre == 'BS' & ant_sent2$variable == 'ww.sent']), na.rm = TRUE)-
-  mean(num_func(ant_sent2$value[ant_sent2$genre == 'BS' & ant_sent2$variable == 'mm.sent']), na.rm = TRUE)
-mean(num_func(ant_sent2$value[ant_sent2$genre == 'NYT' & ant_sent2$variable == 'ww.sent']), na.rm = TRUE)- 
-  mean(num_func(ant_sent2$value[ant_sent2$genre == 'NYT' & ant_sent2$variable == 'mm.sent']), na.rm = TRUE)
-
-# 2c: SIGNIFICANCE TESTING
-# - - - - - - - - - - - - -  
-
-# anova
-# for genre across sentiment types
-ant_sent_ag <- melt(ant_ALL, id = "ag", measure = c("ww.sent", "mm.sent"), na.action=na.omit, na.rm=TRUE)
-ant_sent_genre  <- melt(ant_ALL, id = "genre", measure = c("ww.sent", "mm.sent"), na.action=na.omit, na.rm=TRUE)
-ant_sent  <- data.frame(cbind('genre'=ant_sent_genre$genre,ant_sent_ag), row.names = NULL)
-
-# for sentiment types
-ant_sent2  <- ant_sent[ant_sent$value != 'error',]
-ant_sent2  <- ant_sent2[is.finite(num_func(ant_sent2$value)),]
-anova_sent <- summary(aov(value ~ variable, data=ant_sent2)) 
-
-# for influence of author genre / genre
-ant_sent3  <- ant_sent2[ant_sent2$ag == 'M' | ant_sent2$ag == 'F',]
-anova_func(ant_sent2$value, ant_sent2$genre, ant_sent2$ag)
-
-
-# 3: BALANCE
-# = = = = = = = = 
-
-# 3a: CALCULATE BALANCE
-setwd(wd)
-files_n <- list.files('nodes_ALL')
-files_e <- list.files('edges_ALL')
-triples_ALL <- NULL
-for (i in 1:length(files_n)) {
-  setwd(paste((wd),('nodes_ALL'),sep = "/"))
-  node <- read.csv(files_n[i])
-  setwd(paste((wd),('edges_ALL'),sep = "/"))
-  edge <- read.csv(files_e[i])
-  work <- files_e[i]
-  #prepare for igraph
-  edge1 <- edge[,1:2]
-  #make a "graph object"
-  g <- graph.data.frame(edge1, directed=FALSE, vertices=NULL)
-  #make a second that collapses all interactions into *unique* interactions w edge weights
-  #set attributes
-  V(g)$name <- as_ids(V(g))
-  V(g)$gender <-as.character(node$GENDER[match(V(g)$name,node$NAME)])
-  #remove unknown genders
-  g_clean<-delete_vertices(g, which(V(g)$gender == "?")) 
-  if (length(V(g_clean)$gender) > 10) {
-    #first extract top 10 most connected characters
-    top10 <- names(sort(degree(g_clean), decreasing = T)[1:10])
-    non.top10<-names(sort(degree(g_clean), decreasing = T)[11:length(V(g_clean))])
-    #reduce graph to these characters
-    g.sub<-delete_vertices(g_clean, v=non.top10)
-    #get cliques of size 3
-    c <- cliques(g.sub, min = 3, max = 3)
-    #turn cliques into a table of triples
-    if (length(c) > 1){
-      triples<-NULL
-      for (m in 1:length(c)){
-        temp<-names(unlist(c[[m]]))
-        triples<-(rbind(triples, temp))
-      }
-      row.names(triples)<-c(1:nrow(triples))
-      triples<-as.data.frame(triples)
-      colnames(triples)<-c("name1", "name2", "name3")
-      edge.balance<-edge[,1:4]
-      #set gender code for each row 
-      trio.type<-vector()
-      balance.type<-vector()
-      for (k in 1:nrow(triples)){        
-        c1<-as.character(node[which(as.character(node$NAME) == as.character(triples$name1[k])),3])
-        c2<-as.character(node[which(as.character(node$NAME) == as.character(triples$name2[k])),3])
-        c3<-as.character(node[which(as.character(node$NAME) == as.character(triples$name3[k])),3])
-        trio.gender<-paste(c1,c2,c3, sep="")
-        if (trio.gender == "MMM"){
-          trio.type<-append(trio.type, "0.w")
-        } else if (trio.gender == "FFF") {
-          trio.type<-append(trio.type, "3.w")
-        } else if (str_count(trio.gender, "F") == 2){
-          trio.type<-append(trio.type, "2.w")
-        } else {
-          trio.type<-append(trio.type, "1.w")
-        }
-        #now get balance
-        #smooth values
-        edge.balance$X..POS<-edge.balance$X..POS+.0001
-        edge.balance$X..NEG<-edge.balance$X..NEG+.0001
-        #find pairs
-        pair1<-edge.balance[as.character(edge.balance$NAME.1) == as.character(triples$name1[k]) | as.character(edge.balance$NAME.2) == as.character(triples$name1[k]),]
-        pair1<-pair1[as.character(pair1$NAME.2) == as.character(triples$name2[k]) | as.character(pair1$NAME.1) == as.character(triples$name2[k]),]
-        pair2<-edge.balance[as.character(edge.balance$NAME.1) == as.character(triples$name2[k]) | as.character(edge.balance$NAME.2) == as.character(triples$name2[k]),]
-        pair2<-pair2[as.character(pair2$NAME.2) == as.character(triples$name3[k]) | as.character(pair2$NAME.1) == as.character(triples$name3[k]),]
-        pair3<-edge.balance[as.character(edge.balance$NAME.1) == as.character(triples$name3[k]) | as.character(edge.balance$NAME.2) == as.character(triples$name3[k]),]
-        pair3<-pair3[as.character(pair3$NAME.2) == as.character(triples$name1[k]) | as.character(pair3$NAME.1) == as.character(triples$name1[k]),]
-        #establish book sentiment ratio
-        s<-sum(edge.balance$X..POS)/sum(edge.balance$X..NEG)
-        #find pair ratios
-        sum1<-sum(pair1$X..POS)/sum(pair1$X..NEG)
-        sum2<-sum(pair2$X..POS)/sum(pair2$X..NEG)
-        sum3<-sum(pair3$X..POS)/sum(pair3$X..NEG)
-        sum.all<-c(sum1, sum2, sum3)
-        #+++
-        if (sum1 > s & sum2 > s & sum3 > s){
-          balance.type<-append(balance.type,"b")
-          #---
-        } else if (sum1 < s & sum2 < s & sum3 < s){
-          balance.type<-append(balance.type,"u")
-        } else if (length(which(sum.all < s)) == 2){
-          balance.type<-append(balance.type,"u")
-        } else {
-          balance.type<-append(balance.type,"b")
-        }
-      }
-      genre <- as.character(metadata.df$genre[(which(top_chars$work %in% work))][1])
-      if (is.null(genre)) {genre  <- 'catch'}
-      ag <- as.character(metadata.df$ag[(which(metadata.df$ID %in% work))][1]) 
-      temp<-data.frame(work, ag, genre, trio.type, balance.type)
-      triples_ALL<-data.frame(rbind(triples_ALL,temp))
-    }
-  }
-}
-
-# 3b: REPORTED VALUES 
-# - - - - - - - - - - 
-
-sum(triangles.sum) # total triangles
-
-# by balance type
-length(which(triples_ALL$balance.type == "b")) # balanced
-length(which(triples_ALL$balance.type == "u")) # unbalanced
-
-# by gender type 
-length(which(triples_ALL$trio.type=="3.w")) # www
-length(which(triples_ALL$trio.type=="2.w")) # wwm
-length(which(triples_ALL$trio.type=="1.w")) # wmm
-length(which(triples_ALL$trio.type=="0.w")) # mmm 
-
-# balanced / unbalanced by genre
-bu_genre <- NULL
-for (i in 1:nlevels(triples_ALL$genre)){
-  genre  <- levels(triples_ALL$genre)[i]
-  b <- length(which(triples_ALL$genre == genre & triples_ALL$balance.type == "b"))
-  u <- length(which(triples_ALL$genre == genre & triples_ALL$balance.type == "u"))
-  b_u  <- b/u
-  temp <- data.frame(cbind(b,u, b_u))
-  rownames(temp)  <- genre
-  bu_genre  <- rbind(bu_genre, temp)
-}
-
-sum(num_func(bu_genre$b))/sum(num_func(bu_genre$u)) # overall ratio of b / u 
-
-# by triangle type
-bu_type <- NULL
-for (i in 1:nlevels(triples_ALL$trio.type)){
-  type  <- levels(triples_ALL$trio.type)[i]
-  b <- length(which(triples_ALL$trio.type == type & triples_ALL$balance.type == "b"))
-  u <- length(which(triples_ALL$trio.type == type & triples_ALL$balance.type == "u"))
-  b_u  <- b/u
-  temp <- data.frame(cbind(b,u, b_u))
-  rownames(temp)  <- type
-  bu_type  <- rbind(bu_type, temp)
-}
-
-# author gender
-triples_ag<-triples_ALL[triples_ALL$ag != "X" & triples_ALL$ag != "T" & triples_ALL$genre != "ROM",]
-bu_ag <- NULL
-for (i in 1:nlevels(triples_ag$ag)){
-  type  <- levels(triples_ag$ag)[i]
-  b <- length(which(triples_ag$ag == type & triples_ag$balance.type == "b"))
-  u <- length(which(triples_ag$ag == type & triples_ag$balance.type == "u"))
-  b_u  <- b/u
-  temp <- data.frame(cbind(b,u, b_u))
-  rownames(temp)  <- type
-  bu_ag  <- rbind(bu_ag, temp)
-}
-
-# 3c: SIGNIFICANCE TESTING 
-# - - - - - - - - - - - - -
-
-chisq.test(t(bu_genre[1:2])) # not sig 
-chisq.test(t(bu_ag[1:2,1:2])) # not sig 
-fisher.test(data.frame(rbind(bu_type[1,1:2], bu_type[4,1:2]))) # not sig 
-
-# 3d: FIGURE 8
-# - - - - - - -
-
-figure_8 <- ggplot(triples_ALL, aes(balance.type, ..count..)) + 
-  geom_bar(aes(fill = trio.type), position = "dodge") +
-  ggtitle(label = "Balanced and Unbalanced, by Gender Type") +
-  ylab("Number of Triangles") +
-  theme_bw() +
-  scale_x_discrete(name = "Gender Type", labels = c("Balanced", "Unbalanced")) +
-  scale_fill_manual(values=c("darkorange2","tan1", "thistle3", "mediumpurple3"), labels = c("MMM", "WMM", "WWM", "WWW")) +
-  labs(fill="Triangle Type") +
-  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
-        text = element_text(size = 11, family = "Times New Roman"),
-        axis.title = element_text(face="bold"),
-        axis.text.x=element_text(size = 11))
-
 ```
-
