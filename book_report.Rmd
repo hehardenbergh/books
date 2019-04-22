@@ -1,0 +1,695 @@
+---
+title: "Gender Hierarchy in Fiction: A Replication of Kraicer and Piper, 2019: Social Characters: The Hierarchy of Gender in Contemporary English-Language Fiction"
+author: "Hannah Hardenbergh"
+date: "5/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      error = FALSE)
+
+# set working directory here, with a line of code in its own chunk. Whenever a
+# file is read in or a folder is accessed in other chunks, I make sure that the
+# correct working directory is called. originally, the authors organized their
+# code with setwd() so that they didn't have to manually code all the file
+# paths. Turns out that was confusing for my directories because of how I wanted
+# to organize the authors' original data.
+
+# as the author's readme says, you will need the functions and objects listed in
+# this sourced file:
+
+source("./books.data/hierarchy_adj.r")
+```
+
+This file contains code that replicates the first table and first four figures of Kraicer and Piper's report on how gender bias has found its way into contemporary fiction. The scope of this project is to enhance the figures that give the paper as a whole a more understandable visual for its readers. Kraicer and Piper establish several assertions; my goal with this replication is to simply provide readers a more accurate description of the underrepresentation of female-gendered characters in contemporary novels so that Kraicer and Piper's foundation for their statistical analyses is crystal-clear. Their paper could use improvements in other areas as well, and their data continued to be cleaned, certainly an area for future research.
+
+```{r}
+################################
+
+# ------------------------
+# THE HIERARCHY OF GENDER 
+# ------------------------
+# Author: Eve Kraicer and Dr. Andrew Piper
+# Date: August 2018
+
+################################
+
+# This script runs all of the calculations for the paper.
+# This includes interpreting the raw data, testing significance, and reporting values.
+# This script also builds tables and figures.
+# To run, change wd to a directory with nodes_ALL, edges_ALL, hierarchy_metadata.csv, and hierarchy_adj.R 
+
+# load libraries
+
+library(epiR)
+library(stats)
+library(igraph)
+
+library(dplyr)
+library(bazar)
+library(reshape2)
+library(stringr)
+library(splitstackshape)
+library(rapport)
+
+library(ggplot2)
+library(RColorBrewer)
+library(gt)
+library(knitr)
+library(kableExtra)
+
+library(tidyverse)
+
+```
+
+```{r }
+
+# unzip the folders nodes_ALL and edges_ALL.
+
+unzip("./books.data/edges_ALL.zip")
+unzip("./books.data/nodes_ALL.zip")
+
+# get rid of all working directory calls. manually set path directories for each
+# file read-in. when you get rid of it, just be careful about where you are
+# trying to grab files from. sometimes they are in different places.
+
+
+# dont know why this function is here. It makes numeric strings character
+# strings, but why??? --> turning factor variables into numeric. You can't do it
+# though because of the way that factors are shown internally in R.
+
+# This function is probably used to turn factor variables into numeric. You
+# can't do that by just going straight to numeric because of the way that
+# factors are represented internally in R.
+
+num_func  <- function(x){as.numeric(as.character(x))}
+
+# ------------------------
+# SECTION I: DATA
+# ------------------------
+
+# this function is used for figure 2- running a Rogan and Gladen's approach to
+# testing for the true prevalence of how many women are included in the dataset.
+
+epi_add  <- function(pos, tested, se, sp){
+  epi  <- (epi.prev(pos, tested, se_2, sp_2)$tp[[1]])*.01
+  add  <- num_func(round((tested*epi)-pos))
+  return(add)
+}
+
+# 1: DATA & DATA PREP
+# = = = = = = = = = = = 
+
+# metadata. make sure the file path name is correct in your project.
+
+metadata.df <- data.frame(read_csv('books.data/hierarchy_metadata.csv'))
+
+# subset by works with main character identified and by women
+
+meta_mc.df <- metadata.df[metadata.df$mc_calc == 'Y',]
+meta_w.df  <- metadata.df[metadata.df$ag == 'F',]
+
+# tokens, nodes and edges
+
+
+# interesting that I don't have the tokens file... in the original data.
+# What/Where is it? (Command-shift-f finds every place something is mentioned in
+# the project...)
+
+# tokens_files <- list.files('tokens_ALL')
+
+nodes_list <- c('nodes_YA', 'nodes_NYT', 'nodes_MY', 'nodes_SF',
+                'nodes_BS', 'nodes_ROM', 'nodes_PW')
+
+edges_list <- c('edges_YA', 'edges_NYT', 'edges_MY', 'edges_SF', 
+                'edges_BS', 'edges_ROM', 'edges_PW')
+```
+
+```{r }
+# 1b: TABLE ONE
+# - - - - - - - - 
+# gather info for table 1
+
+# originally, authors used nlevels() and levels() to access the number of genres
+# there are to build dataframes. but you need a factor to do that. the variable
+# metadata.df$genre is a character string. so, I keep this for loop to build
+# data frames but I used a new object, called "genre_levels".
+
+genre_levels <- unique(metadata.df$genre)
+
+data_info <- NULL
+
+# find the data in the correct file path/working directory:
+files <- list.files('books.data/nodes_ALL')
+
+for (i in 1:length(genre_levels)){
+  
+
+  meta_sub <- metadata.df[metadata.df$genre == genre_levels[i],]
+  
+  # Start to make columns with data
+  
+  titles  <- files[files %in% meta_sub$ID]
+  author <- str_split_fixed(titles, "_", 3)
+  no_authors <- length(unique(author[,2]))
+  genre <- genre_levels[i]
+  novels <- length(titles)
+  perc_w <- (length(which(titles %in% meta_w.df$ID))/novels)*100
+  
+  # bind for a dataframe
+  
+  temp_info <- data.frame(cbind(genre, novels, no_authors, perc_w))
+  data_info <- data.frame(rbind(data_info, temp_info))
+}
+
+# build and order table 1 
+
+table_1 <- data_info[order(num_func(data_info$perc_w)),]
+
+# make it pretty: column names, round percentages, etc. using gt().
+
+table_1_tidy <- table_1 %>% 
+  rename("code" = "genre") %>% 
+  mutate(genre = c("Science Fiction",
+                   "Prizewinners",
+                   "Bestsellers",
+                   "NYT Reviewed",
+                   "Mystery",
+                   "Young Adult",
+                   "Romance"))
+
+table_1_tidy %>%
+  mutate(perc_z = as.numeric(as.character(perc_w))) %>% 
+  select(code, novels, no_authors, perc_z, genre) %>% 
+  gt() %>% 
+  cols_move_to_start(columns = vars(genre)) %>% 
+  cols_label(code = "Code", 
+             novels = "Novels",
+             no_authors = "# Authors",
+             perc_z = "% Women Authors",
+             genre = "Genre") %>% 
+  fmt_number(columns = vars(perc_z), decimals = 2)
+```
+
+
+```{r }
+
+# 1c: FIGURE ONE
+# - - - - - - - - 
+
+# DATA
+# calculates the mentions for each character by rank position 
+
+# run twice turning off / on condition
+# once on all works (mentions) 
+# once on only works with main character identified by gender (mentions_sub)
+
+mentions <- NULL
+
+# mentions_sub <- NULL
+
+# set working directory to where the data lives.
+
+files <- list.files('./books.data/nodes_ALL')
+
+for(j in 1:length(files)){
+  work  <- files[j]
+  nodes <- data.frame(read_csv(paste0('books.data/nodes_ALL/', (files[j]))))
+
+  # only pull mentions
+  
+  m_counts <- data.frame(nodes[,2]) 
+  
+  # add columns
+  
+  extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200))
+  
+  #give same column names
+  
+  colnames(extra) <- colnames(m_counts) 
+  
+  #bind
+  
+  mentions_bind <- rbind(m_counts, extra) 
+  mentions <- cbind(mentions, mentions_bind[1:150,])
+  
+  # mentions_sub <- cbind(mentions_sub, mentions_bind[1:150,])
+  # }
+}
+
+# count up sums for each rank position for both cases 
+rank_m <- NULL
+rank_m_sub <- NULL
+
+for (i in 1:nrow(mentions)){
+  mean <- mean(num_func(mentions[i,]), na.rm=TRUE)
+  sum <- sum(mentions[i,], na.rm=TRUE)
+  log_sum <- log(sum)
+  rank <- i
+  temp <- data.frame(cbind(rank,mean,sum,log_sum))
+  rank_m <- data.frame(rbind(rank_m,temp))
+}
+
+# for (i in 1:nrow(mentions_sub)){
+#   mean <- mean(num_func(mentions_sub[i,]), na.rm=TRUE)
+#   sum <- sum(mentions_sub[i,], na.rm=TRUE)
+#   log_sum <- log(sum)
+#   rank <- i
+#   temp <- data.frame(cbind(rank,mean,sum,log_sum))
+#   rank_m_sub <- data.frame(rbind(rank_m_sub,temp))
+# }
+
+# BUILD  
+
+# run on all works 
+
+ggplot(data=rank_m, aes(x=rank, y=mean)) +
+  geom_point()+
+  ggtitle("Mean Mentions by Rank")+
+  labs(x="Character Rank by Mentions", y="Mean Mentions")+
+  theme_bw()+
+  geom_vline(xintercept = 20, linetype = "dashed") +
+  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
+        text = element_text(size = 11, family = "Times New Roman"),
+        axis.title = element_text(face="bold"),
+        axis.text.x=element_text(size = 11))
+
+```
+
+
+```{r }
+
+# 1d: FIGURE TWO
+# - - - - - - - - 
+
+# DATA
+# calculates raw counts of M/ W/ ? by rank position 
+
+files <- list.files('./books.data/nodes_ALL')
+
+# run four times turning off / on condition
+# once on all works (raw) 
+# once on only works with main character identified by gender (raw_sub)
+# once on all works by women (raw_w) 
+# once on only works by women with main character identified by gender (raw_sub_w)
+
+# what you should do is make a vector with accurate dimensions if you know it,
+# with NA's. but the authors just create objects with empty space to use later
+# using NULL. 
+
+raw <- NULL
+raw_sub <- NULL
+raw_w  <- NULL
+raw_sub_w <- NULL
+
+for(i in 1:length(files)){ 
+  work  <- files[i]
+  
+  # only files where top pair was calculated 
+  
+  if (work %in% meta_mc.df$ID){
+    
+    # only files written by women authors 
+    
+    if (work %in% meta_w.df$ID){
+      
+      nodes <- data.frame(read_csv(paste0('books.data/nodes_ALL/', (files[i]))))
+      genders <- data.frame(nodes[,3]) 
+      
+      # add columns to cbind different books 
+      
+      extra <- as.data.frame(matrix(c(rep.int(NA,length(200))),nrow=200)) 
+      colnames(extra) <- colnames(genders)
+      genders_bind <- rbind(genders, extra) 
+      
+      raw <- data.frame(cbind(raw, genders_bind[1:150,]))
+      raw_sub <- data.frame(cbind(raw_sub, genders_bind[1:150,]))
+      raw_w <- data.frame(cbind(raw_w, genders_bind[1:150,]))
+      raw_sub_w  <- data.frame(cbind(raw_sub_w, genders_bind[1:150,]))
+    }
+  }
+}
+
+# clean vectors to normalize factors --> characters. This function will make
+# gender identifiers. It does so by using gsub(), which replaces the numbers 1,
+# 2, or 3 with 'M', 'F', or '?'.
+
+clean_func  <- function(df){
+  v <- df[,1]
+  clean <- gsub(3, 'M', v)
+  clean <- gsub(2, 'F', clean)
+  clean <- gsub(1, '?', clean)
+  return(clean)
+}
+
+raw[,1] <- clean_func(raw)
+raw_sub[,1] <- clean_func(raw_sub)
+raw_w[,1] <- clean_func(raw_w)
+raw_sub_w[,1] <- clean_func(raw_sub_w)
+
+# count up sums for each rank position
+x <- NULL
+
+rank_func  <- function(x){
+  ranks <- NULL
+  for (i in 1:nrow(x)){
+    wr <- length(which(x[i,] == 'F')) # how many women
+    mr <- length(which(x[i,] == 'M')) # how many men
+    q  <- length(which(x[i,] == '?')) # how many unknown
+    
+    all <- mr + wr + q
+    
+    # adjust women and men 
+    
+    women  <- wr + epi_add(wr,
+                           all,
+                           se_2, 
+                           sp_2)
+    men  <- mr + epi_add(mr,
+                         all,
+                         se_2m,
+                         se_2m)
+    temp <- data.frame(women,
+                       men,
+                       q,
+                       all) 
+    #cbind for storage
+    ranks <-data.frame(rbind(ranks,
+                             temp))
+  }
+  
+  ranks$rank <- 1:150
+  ranks$cumulative_q  <- cumsum(ranks$q)/cumsum(ranks$all)
+  return(ranks)
+}
+
+# here, the code is using the rank_func function that the authors create in
+# hierarchy_adj.r, which is sourced at the beginning of this code. It makes the
+# estimates for true prevalence tests that validate that some gender assignments
+# in books are inaccurate. as in, on page 8 of the paper when authors discuss
+# the proportions of accurately assigned and inaccurately assigned gender
+# identifiers (male, female, or unknown.) Basically, this means that if there is
+# a higher sensitivity rate for one gender, that means they have been assigned
+# more accurately. when men have this higher rate, it accounts for the
+# possibility of women being undercounted in the dataset after they have
+# assigned gender identifiers manually.
+
+# in order to run properly, apparent prevalence can't be less than (1 - Sp),
+# otherwise the estimate of true prevalance will be "invalid".
+
+ranks_all <- rank_func(raw)
+ranks_sub  <- rank_func(raw_sub)
+ranks_w  <- rank_func(raw_w)                   
+ranks_sub_w  <- rank_func(raw_sub_w)   
+
+# basic counts by subsets
+# how many unknown overall?
+
+perc_unknown10 <- sum(ranks_all$q[1:10])/sum(ranks_all$all[1:10])
+perc_unknown20 <- sum(ranks_all$q[1:20])/sum(ranks_all$all[1:20])
+
+# BUILD 
+# run on all works
+
+figure_2 <- ggplot(data=ranks_all, aes(x = rank, y = cumulative_q)) +
+  geom_line()+
+  ggtitle("% Unassigned Characters by Mentions Rank")+
+  labs(x = "Character Rank by Mentions", 
+       y = "Cumulative Percent Unassigned")+
+  theme_bw() + 
+  geom_vline(xintercept = 20, linetype = "dashed") + 
+  theme(plot.title = element_text(size = 13, 
+                                  family = "Times New Roman", 
+                                  face = "bold"),
+        text = element_text(size = 11, family = "Times New Roman"),
+        axis.title = element_text(face="bold"),
+        axis.text.x = element_text(size = 11))
+
+figure_2
+```
+
+
+```{r  include = FALSE}
+# ------------------------
+# SECTION II: VISIBILITY
+# ------------------------
+
+# bootstrapper 
+# x is column on df to be sampled, y is df
+
+boot_func <- function(x,y){
+  sample <- as.character(sample(x, nrow(y), replace = TRUE))
+  return(sample)
+}
+
+# adjustments
+# for all
+epi_func <- function(vector,w,m,q,se,sp){
+  pos <- length(which(as.character(vector) == w))
+  tested <- length(which(as.character(vector) == w | as.character(vector) == m | as.character(vector) == q)) 
+  epi <- epi.prev(pos, tested, se, sp)
+  adj_perc <- epi$tp[[1]]*.01
+  adj_add <- round((tested*adj_perc)-pos)
+  return(adj_add)
+}
+
+# for main chars
+epi_func2 <- function(vector,w,m,se,sp){
+  pos <- length(which(as.character(vector) == w))
+  tested <- length(which(as.character(vector) == w | as.character(vector) == m)) # original sample set 
+  epi <- epi.prev(pos, tested, se, sp)
+  # find percentage increase of women for true prevalence of women as main character
+  adj_perc <- epi$tp[[1]]*.01
+  # how many more women is that? 
+  adj_add <- round((tested*adj_perc)-pos)
+  return(adj_add)
+}
+
+# 1: TOP 20 & ALL 
+# = = = = = = = = = 
+
+# build master table with genders of top pairs from each document
+
+# run twice for conditionals 
+# once for all 
+# once for only characters in the top twnety 
+
+chars_all  <- NULL
+chars_20 <- NULL
+
+for (i in 1:length(genre_levels)){
+  
+  #loop through each file
+  meta_sub <- metadata.df[metadata.df$genre == genre_levels[i],]
+  titles  <- files[files %in% meta_sub$ID]
+  
+  # loop through each file
+  chars <- NULL
+  for(j in 1:length(titles)){ 
+    work <- titles[j]
+    nodes <- data.frame(read_csv(paste0('./books.data/nodes_ALL/', (titles[j]))))
+
+    
+    # genders  <- as.character(nodes[,3])
+    # for 20 chars run these lines 
+    # make sure work has 20 chars
+    
+    if (nrow(nodes) >= 20){
+      genders <- as.character(nodes[1:20,3])
+    } else {
+      genders <- as.character(nodes[,3])}
+    ag <- as.character(metadata.df$ag[(which(metadata.df$ID %in% work))])
+    genre <- genre_levels[i]
+    temp_chars <- data.frame(cbind(work,genders,ag,genre))
+    chars <- data.frame(rbind(temp_chars,chars))
+  }
+  chars_20  <- data.frame(rbind(chars_20, chars))
+  
+  # chars_all <- data.frame(rbind(chars_all, chars))
+}
+```
+
+
+
+
+
+
+
+
+```{r  include = FALSE}
+# 1a: ADJUSTMENTS
+# - - - - - - - - - 
+
+# how many M / ? need to be replaced with Fs?
+
+men_rep2  <- epi_func(chars_20$genders, 'M', 'F', '?', se_2m, sp_2m)
+q_rep2  <- (epi_func(chars_20$genders, 'F', 'M', '?', se_2, sp_2))-abs(men_rep2)
+
+# randomly replace M 
+
+rep_m20 <- sample(which(chars_20$gender == 'M'), abs(men_rep2))
+chars_20$adj_all <- replace(as.character(chars_20$gender), rep_m20, 'F')
+
+# randomly replace ?
+
+rep_q20 <- sample(which(chars_20$adj_all == '?'), q_rep2)
+chars_20$adj_all <- replace(as.character(chars_20$adj_all), rep_q20, 'F')
+
+
+# BOOTSTRAP 
+# calculate the percentage of 'F' with bootstrapping 
+
+boot_chars_20 <- vector()
+boot_chars_all  <- vector()
+for (j in 1:10000){  
+  sample <- boot_func(chars_20$adj_all, chars_20)
+  # sample  <- boot_func(chars_all$adj_all, chars_all)
+  f_perc <- length(which(sample == 'F'))/length(sample)
+  boot_chars_20[j] <- f_perc
+  # boot_chars_all[j] <- f_perc
+}
+
+```
+
+```{r  include = FALSE}
+
+# 1b: REPORTED VALUES
+# - - - - - - - - - - 
+
+length(which(chars_20$genders == 'F')) # raw women
+length(which(chars_20$adj_all == 'F')) # adjusted women 
+length(which(chars_20$adj_all == 'F')) / nrow(chars_20) # % women 
+mean(boot_chars_20) # bootstrap mean - top 20 
+mean(boot_chars_all) # bootstrap mean - all 
+
+# by genre and ag 
+
+chars_func  <- function(x){
+  results <- NULL
+  for (i in 1:nlevels(x)){
+    sub <- chars_20[which(as.character(x) == levels(x)[i]),]
+    genre <- levels(x)[i]
+    f <- vector()
+    for (j in 1:10000){  
+      sample <- boot_func(sub$adj_all, sub)
+      f[j] <- length(which(sample == 'F'))
+    }
+    all  <- nrow(sub)
+    temp <- data.frame(cbind('f'= mean(f), 'all'= all, genre))
+    results <- data.frame(rbind(results,temp))
+  }
+  results$f_perc  <- num_func(results$f)/num_func(results$all)
+  return(results)
+}
+
+# by genre and author gender 
+
+boot_chars_genre <- chars_func(chars_20$genre)
+
+# remove romance
+
+chars_20xROM <- chars_20[which(chars_20$genre != 'ROM'),]
+boot_chars_ag <- chars_func(chars_20xROM$ag)
+boot_chars_ag_wROM <- chars_func(chars_20$ag)
+```
+
+
+```{r include=FALSE}
+
+# 1d: SIGNIFICANCE TESTING
+# - - - - - - - - - - - - - 
+
+chisq_20  <- t(data.frame(cbind('women' = num_func(boot_chars_genre$f), 
+                                'all'=num_func(boot_chars_genre$all))))
+chisq.test(chisq_20)
+
+chisq_20_ag  <- t(data.frame(cbind('women' = num_func(boot_chars_ag$f[1:2]),
+                                   'all'=num_func(boot_chars_ag$all[1:2]))))
+chisq.test(chisq_20_ag)
+fisher.test(chisq_20_ag)
+```
+
+
+```{r results='asis'}
+
+# 1e: TABLE TWO
+# - - - - - - - - 
+
+table_2  <- data.frame(cbind('genre' = as.character(boot_chars_genre$genre),
+                             'percent_w' = num_func(boot_chars_genre$f_perc)*100))
+
+table_2 <- table_2[order(num_func(table_2$percent_w)),]
+
+table_2_tidy <- table_2 %>%
+  gt() %>% 
+  tab_header("Estimates for Prevalence of Women in Top-Twenty Characters in Novels of All Genres") %>% 
+  cols_label(genre = "Genre",
+             percent_w = "% Women Top-Twenty Characters") %>% 
+  fmt_number(columns = vars(percent_w))
+
+
+```
+
+
+```{r results='asis'}
+
+# 1f: FIGURES THREE & FOUR
+# - - - - - - - - - - - - -
+
+# DATA 
+# from ranks_sub, update the first and second character based on perspective calcs
+
+ranks_sub[1,1:2]  <- c(623, 617)
+ranks_sub[2,1:2]  <- c(470, 768)
+ranks_sub_w[1,1:2]  <- c(321,194)
+ranks_sub_w[2,1:2]  <- c(191,324)
+
+# get correct percentages of women 
+
+ranks_sub$perc_w  <- ranks_sub$w/ranks_sub$all
+ranks_sub_w$perc_w  <- ranks_sub_w$w/ranks_sub_w$all
+
+# BUILD 
+# figure 3 
+# uses only works with main character identified 
+
+figure_3 <- ggplot(data=ranks_sub, aes(rank)) + 
+  geom_line(aes(y = women, colour = "Women")) + 
+  geom_line(aes(y = men, colour = "Men")) +
+  scale_color_manual(values=c("darkorange2", "mediumpurple4")) +
+  ggtitle("Men and Women by Rank Position (All Authors)")+
+  labs(x="Rank of Character", y="") +
+  labs(color="Character Gender") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
+        text = element_text(size = 11, family = "Times New Roman"),
+        axis.title = element_text(face="bold"),
+        axis.text.x=element_text(size = 11)) +
+  geom_vline(xintercept = 20, linetype = "dashed") 
+
+print(figure_3)
+
+# figure 4 
+
+figure_4 <- ggplot(data = ranks_sub_w, aes(rank)) + 
+  geom_line(aes(y = women, colour = "Women")) + 
+  geom_line(aes(y = men, colour = "Men")) +
+  scale_color_manual(values=c("darkorange2", "mediumpurple4")) +
+  ggtitle("Men and Women by Rank Position (Women Authors)")+
+  labs(x="Rank of Character", y="") +
+  labs(color="Character Gender") +
+  theme_bw() +
+  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
+        text = element_text(size = 11, family = "Times New Roman"),
+        axis.title = element_text(face="bold"),
+        axis.text.x=element_text(size = 11)) +
+  geom_vline(xintercept = 20, linetype = "dashed") 
+
+print(figure_4)
+
+```
+
+
