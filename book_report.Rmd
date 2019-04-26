@@ -11,36 +11,25 @@ knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE,
                       error = FALSE)
 
-# set working directory here, with a line of code in its own chunk. Whenever a
-# file is read in or a folder is accessed in other chunks, I make sure that the
-# correct working directory is called. originally, the authors organized their
-# code with setwd() so that they didn't have to manually code all the file
-# paths. Turns out that was confusing for my directories because of how I wanted
-# to organize the authors' original data.
+# Originally, the authors organized their code with setwd() in each code chunk
+# so that they didn't have to manually code all the file paths. Turns out that
+# was more of a nuisance rather than a useful method. you win some, you lose
+# some.
 
-# as the author's readme says, you will need the functions and objects listed in
+# As the author's readme says, you will need the functions and objects listed in
 # this sourced file:
 
 source("./books.data/hierarchy_adj.r")
+
+# The author's readme ("README.txt") has great information on different
+# dataframes as well as how the replication code works. This was a plus when
+# working with this code.
+
 ```
 
-This file contains code that replicates the first table and first four figures of Kraicer and Piper's report on how gender bias has found its way into contemporary fiction. The scope of this project is to enhance the figures that give the paper as a whole a more understandable visual for its readers. Kraicer and Piper establish several assertions; my goal with this replication is to simply provide readers a more accurate description of the underrepresentation of female-gendered characters in contemporary novels so that Kraicer and Piper's foundation for their statistical analyses is crystal-clear. Their paper could use improvements in other areas as well, and their data continued to be cleaned, certainly an area for future research.
+This file contains code that replicates the first table and first four figures of Kraicer and Piper's report on how gender bias has found its way into contemporary fiction. Published in the Journal of Cultural Analytics on January 30, 2019, Kraicer and Piper's research is at the intersection of both the humanities and a quantitative analysis of the social sciences. Their work is extensive and impressive. The scope of this replication is to enhance the first four figures and first two tables, which will give the paper as a whole a more understandable visual for its readers. Kraicer and Piper establish several statistically significant assertions in this paper; my goal is to simply provide readers a more accurate visual for the contextualization of the underrepresentation of female-gendered characters in contemporary novels so that Kraicer and Piper's foundation for their statistical analyses is crystal-clear. Their paper is strong, and their dataset is massive. It could benefit from continued cleaning and simplifying. This is certainly an area for future research.
 
 ```{r}
-################################
-
-# ------------------------
-# THE HIERARCHY OF GENDER 
-# ------------------------
-# Author: Eve Kraicer and Dr. Andrew Piper
-# Date: August 2018
-
-################################
-
-# This script runs all of the calculations for the paper.
-# This includes interpreting the raw data, testing significance, and reporting values.
-# This script also builds tables and figures.
-# To run, change wd to a directory with nodes_ALL, edges_ALL, hierarchy_metadata.csv, and hierarchy_adj.R 
 
 # load libraries
 
@@ -65,7 +54,7 @@ library(tidyverse)
 
 ```
 
-```{r }
+```{r data prep}
 
 # unzip the folders nodes_ALL and edges_ALL.
 
@@ -74,22 +63,15 @@ unzip("./books.data/nodes_ALL.zip")
 
 # get rid of all working directory calls. manually set path directories for each
 # file read-in. when you get rid of it, just be careful about where you are
-# trying to grab files from. sometimes they are in different places.
+# trying to grab files from. Sometimes they are in different places--this
+# replication code should absolve anyone trying to run this code of that
+# problem.
 
-
-# dont know why this function is here. It makes numeric strings character
-# strings, but why??? --> turning factor variables into numeric. You can't do it
-# though because of the way that factors are shown internally in R.
-
-# This function is probably used to turn factor variables into numeric. You
-# can't do that by just going straight to numeric because of the way that
-# factors are represented internally in R.
+# This function is used to turn factor variables into numeric. You can't do that
+# by just going straight to numeric because of the way that factors are
+# represented internally in R, though. num_func is used throughout the code.
 
 num_func  <- function(x){as.numeric(as.character(x))}
-
-# ------------------------
-# SECTION I: DATA
-# ------------------------
 
 # this function is used for figure 2- running a Rogan and Gladen's approach to
 # testing for the true prevalence of how many women are included in the dataset.
@@ -100,10 +82,20 @@ epi_add  <- function(pos, tested, se, sp){
   return(add)
 }
 
-# 1: DATA & DATA PREP
-# = = = = = = = = = = = 
+# metadata. just double check to make sure the file path name is correct in your
+# r project.
 
-# metadata. make sure the file path name is correct in your project.
+# Every novel was also given metadata. This includes manually labelled for author
+# gender as M (man), W (woman) or X (non-binary, either because of gender
+# identity or multiple authorial signatures). The novels were then assigned a
+# point of view (POV) of either 1p (first person) or 3p (third person) based on a
+# machine learning algorithm with SVM classification based on pronoun
+# distributions that was developed for this project using Python and R. The
+# results of this are reported in the paper, and the code can be made available
+# by contacting Eve Kraicer.
+
+# the variable "ag", author gender, also has "T". what does this mean?
+
 
 metadata.df <- data.frame(read_csv('books.data/hierarchy_metadata.csv'))
 
@@ -114,10 +106,11 @@ meta_w.df  <- metadata.df[metadata.df$ag == 'F',]
 
 # tokens, nodes and edges
 
-
-# interesting that I don't have the tokens file... in the original data.
-# What/Where is it? (Command-shift-f finds every place something is mentioned in
-# the project...)
+# interesting that I don't have the tokens file in the replication code/data.
+# What/Where is it? And why can I run things without it? Is it necessary?
+# Questions for the authors... for now, I commented out this line. Further,
+# nowhere else in the original code is "nodes_list" or "edges_list" used. These
+# objects seem like a way to organize genres of the novels that were never used.
 
 # tokens_files <- list.files('tokens_ALL')
 
@@ -128,9 +121,8 @@ edges_list <- c('edges_YA', 'edges_NYT', 'edges_MY', 'edges_SF',
                 'edges_BS', 'edges_ROM', 'edges_PW')
 ```
 
-```{r }
-# 1b: TABLE ONE
-# - - - - - - - - 
+```{r table 1}
+
 # gather info for table 1
 
 # originally, authors used nlevels() and levels() to access the number of genres
@@ -142,12 +134,12 @@ genre_levels <- unique(metadata.df$genre)
 
 data_info <- NULL
 
-# find the data in the correct file path/working directory:
+# list the data from the correct file path/working directory:
+
 files <- list.files('books.data/nodes_ALL')
 
 for (i in 1:length(genre_levels)){
   
-
   meta_sub <- metadata.df[metadata.df$genre == genre_levels[i],]
   
   # Start to make columns with data
@@ -191,6 +183,8 @@ table_1_tidy %>%
              no_authors = "# Authors",
              perc_z = "% Women Authors",
              genre = "Genre") %>% 
+  tab_footnote("Table 1. Summary of our data, with the number of works per genre, number of authors. Genres are ranked by percent of women authors per genre.",
+               locations = cells_column_labels(columns = vars(genre))) %>% 
   fmt_number(columns = vars(perc_z), decimals = 2)
 ```
 
@@ -503,8 +497,9 @@ for (i in 1:length(genre_levels)){
       genders <- as.character(nodes[,3])}
     ag <- as.character(metadata.df$ag[(which(metadata.df$ID %in% work))])
     genre <- genre_levels[i]
-    temp_chars <- data.frame(cbind(work,genders,ag,genre))
-    chars <- data.frame(rbind(temp_chars,chars))
+    
+    temp_chars <- data.frame(cbind(work, genders, ag, genre))
+    chars <- data.frame(rbind(temp_chars, chars))
   }
   chars_20  <- data.frame(rbind(chars_20, chars))
   
@@ -627,12 +622,9 @@ table_2_tidy <- table_2 %>%
   gt() %>% 
   tab_header("Estimates for Prevalence of Women in Top-Twenty Characters in Novels of All Genres") %>% 
   cols_label(genre = "Genre",
-             percent_w = "% Women Top-Twenty Characters") %>% 
-  fmt_number(columns = vars(percent_w))
-
-
+             percent_w = "% Women Top-Twenty Characters")
+print(table_2_tidy)
 ```
-
 
 ```{r results='asis'}
 
