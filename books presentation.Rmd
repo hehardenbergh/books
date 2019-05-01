@@ -2,9 +2,8 @@
 name: title slide
 
 title: "Gender Hierarchy in Fiction"
-subtitle: "Replicating Figures to Properly Reframe Visualizations in Kraicer and Piper, 2019"
+subtitle: "Understanding Graphics Published by Kraicer and Piper, 2019"
 author: "Hannah Hardenbergh"
-institute: "GOV 1006: Models"
 date: "2019/05/01"
 output:
   xaringan::moon_reader:
@@ -13,20 +12,21 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
-    css: robot.css
+    css: tamu
 ---
 
 background-image: url(images/Social_Characters.png)
 background-size: contain
 
 ---
-class: center
+class: left
 
-# Agenda
+## Agenda
 
-1. Introduction to Data
-2. Contextualize research
-3. Investigate
+1. Introduction to data and the digital humanities
+2. Methods and findings
+3. Impact of author's graphics for their intended audience
+
 
 
 ```{r setup, include=FALSE}
@@ -39,8 +39,26 @@ opts_chunk$set(echo = FALSE)
 
 ---
 
-background-image: url(images/CA.png)
+background-image: url(images/CA_image.png)
 background-size: contain
+
+---
+class: left
+## Introduction
+
+- Visibility
+- "Connectivity" through character pairs
+- Heteronormativity of pairs
+- Gender and social balance theory
+
+---
+class: left
+## The Data
+
+- Over 1,000 novels
+- 26,400 characters
+- BooksNLP program (Neuro-linguistic Programming)
+
 
 ---
 class: center, middle
@@ -102,5 +120,3 @@ include_graphics("./images/Kraicer_figure_8.jpeg")
 class: center, middle
 
 ## Questions?
-
-
