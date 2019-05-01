@@ -63,7 +63,7 @@ class: left
 ---
 class: center, middle
 
-#### Character prominence declines non-linearly according to number of mentions in each novel.
+#### Character prominence declines non-linearly as number of mentions decreases in each novel.
 
 ```{r  out.width="500px"}
 include_graphics(path = "./figures/figure_1.jpg")
@@ -73,7 +73,7 @@ include_graphics(path = "./figures/figure_1.jpg")
 ---
 class: center, middle
 
-#### Number of non-assigned gender rises as character mentions decrease
+#### Number of non-assigned gender characters rises as character mentions increase
 
 ```{r out.width="500px"}
 include_graphics("figures/figure_2.jpg")
