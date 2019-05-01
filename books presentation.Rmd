@@ -1,9 +1,11 @@
 ---
+name: title slide
+
 title: "Gender Hierarchy in Fiction"
 subtitle: "Replicating Figures to Properly Reframe Visualizations in Kraicer and Piper, 2019"
 author: "Hannah Hardenbergh"
 institute: "GOV 1006: Models"
-date: "2019/04/24"
+date: "2019/05/01"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -12,28 +14,35 @@ output:
       highlightLines: true
       countIncrementalSlides: false
 ---
+class: center, middle
 
-background-image: url(https://upload.wikimedia.org/wikipedia/commons/b/be/Sharingan_triple.svg)
+# Agenda
+
+1. Introduction to Data
+2. Contextualize research
+3. Investigate
+
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+
+library(knitr)
 ```
 
+---
 
+# Introduction
 
-Image credit: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Sharingan_triple.svg)
 
 ---
+
 class: center, middle
 
-# xaringan
+### Character prominence declines non-linearly according to number of mentions in each novel.
 
-### /ʃaː.'riŋ.ɡan/
-
----
-class: inverse, center, middle
-
-# Get Started
+```{r echo=FALSE}
+include_graphics(path = "./figures/figure_1.pdf")
+```
 
 ---
 

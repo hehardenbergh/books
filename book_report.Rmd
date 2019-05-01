@@ -45,6 +45,7 @@ library(splitstackshape)
 library(rapport)
 
 library(ggplot2)
+library(gridExtra)
 library(RColorBrewer)
 library(gt)
 library(knitr)
@@ -186,6 +187,10 @@ table_1_tidy %>%
   tab_footnote("Table 1. Summary of our data, with the number of works per genre, number of authors. Genres are ranked by percent of women authors per genre.",
                locations = cells_column_labels(columns = vars(genre))) %>% 
   fmt_number(columns = vars(perc_z), decimals = 2)
+
+
+ggsave(filename = "table_1.pdf", plot = tableGrob(table_1), path = "./figures/", width = 10, height = 10)
+
 ```
 
 
@@ -260,17 +265,20 @@ for (i in 1:nrow(mentions)){
 
 # run on all works 
 
-ggplot(data=rank_m, aes(x=rank, y=mean)) +
+fig_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
   geom_point()+
   ggtitle("Mean Mentions by Rank")+
   labs(x="Character Rank by Mentions", y="Mean Mentions")+
   theme_bw()+
   geom_vline(xintercept = 20, linetype = "dashed") +
-  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
-        text = element_text(size = 11, family = "Times New Roman"),
+  theme(plot.title = element_text(size = 13), 
+                                  # family = "Times New Roman", face = "bold"),
+        text = element_text(size = 11), 
+                            # family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11))
 
+ggsave(filename = "figure_1.pdf", plot = fig_1, path = "./figures/", width = 7, height = 7)
 ```
 
 
@@ -416,13 +424,15 @@ figure_2 <- ggplot(data=ranks_all, aes(x = rank, y = cumulative_q)) +
   theme_bw() + 
   geom_vline(xintercept = 20, linetype = "dashed") + 
   theme(plot.title = element_text(size = 13, 
-                                  family = "Times New Roman", 
+                                  # family = "Times New Roman", 
                                   face = "bold"),
-        text = element_text(size = 11, family = "Times New Roman"),
+        text = element_text(size = 11), 
+                            #family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x = element_text(size = 11))
 
-figure_2
+ggsave(filename = "figure_2.pdf", plot = figure_2, path = "./figures/", width = 10, height = 10)
+
 ```
 
 
@@ -624,6 +634,9 @@ table_2_tidy <- table_2 %>%
   cols_label(genre = "Genre",
              percent_w = "% Women Top-Twenty Characters")
 print(table_2_tidy)
+
+ggsave(filename = "table_2.pdf", plot = tableGrob(table_2), path = "./figures/", width = 10, height = 10)
+
 ```
 
 ```{r results='asis'}
@@ -656,13 +669,23 @@ figure_3 <- ggplot(data=ranks_sub, aes(rank)) +
   labs(x="Rank of Character", y="") +
   labs(color="Character Gender") +
   theme_bw() +
-  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
-        text = element_text(size = 11, family = "Times New Roman"),
+  theme(plot.title = element_text(size = 13, 
+                                  # family = "Times New Roman", 
+                                  face = "bold"),
+        text = element_text(size = 11), 
+                            # family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11)) +
   geom_vline(xintercept = 20, linetype = "dashed") 
 
 print(figure_3)
+
+ggsave(filename = "figure_3.pdf", plot = figure_3, path = "./figures/", width = 10, height = 10)
+
+```
+
+
+``` {r results='asis'}
 
 # figure 4 
 
@@ -674,13 +697,18 @@ figure_4 <- ggplot(data = ranks_sub_w, aes(rank)) +
   labs(x="Rank of Character", y="") +
   labs(color="Character Gender") +
   theme_bw() +
-  theme(plot.title = element_text(size = 13, family = "Times New Roman", face = "bold"),
-        text = element_text(size = 11, family = "Times New Roman"),
+  theme(plot.title = element_text(size = 13, 
+                                  # family = "Times New Roman", 
+                                  face = "bold"),
+        text = element_text(size = 11), 
+                            # family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11)) +
   geom_vline(xintercept = 20, linetype = "dashed") 
 
 print(figure_4)
+
+ggsave(filename = "figure_4.pdf", plot = figure_4, path = "./figures/", width = 10, height = 10)
 
 ```
 
