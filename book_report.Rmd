@@ -188,9 +188,6 @@ table_1_tidy %>%
                locations = cells_column_labels(columns = vars(genre))) %>% 
   fmt_number(columns = vars(perc_z), decimals = 2)
 
-
-ggsave(filename = "table_1.pdf", plot = tableGrob(table_1), path = "./figures/", width = 7, height = 7)
-
 ```
 
 
@@ -278,7 +275,7 @@ fig_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11))
 
-ggsave(filename = "figure_1.pdf", plot = fig_1, path = "./figures/", width = 7, height = 7)
+ggsave(filename = "figure_1.jpg", plot = fig_1, path = "./figures/", width = 7, height = 7)
 ```
 
 
@@ -431,7 +428,7 @@ figure_2 <- ggplot(data=ranks_all, aes(x = rank, y = cumulative_q)) +
         axis.title = element_text(face="bold"),
         axis.text.x = element_text(size = 11))
 
-ggsave(filename = "figure_2.pdf", plot = figure_2, path = "./figures/", width = 7, height = 7)
+ggsave(filename = "figure_2.jpg", plot = figure_2, path = "./figures/", width = 7, height = 7)
 
 ```
 
@@ -635,7 +632,7 @@ table_2_tidy <- table_2 %>%
              percent_w = "% Women Top-Twenty Characters")
 print(table_2_tidy)
 
-ggsave(filename = "table_2.pdf", plot = tableGrob(table_2), path = "./figures/", width = 7, height = 7)
+ggsave(filename = "table_2.jpg", plot = tableGrob(table_2), path = "./figures/", width = 7, height = 7)
 
 ```
 
@@ -680,7 +677,7 @@ figure_3 <- ggplot(data=ranks_sub, aes(rank)) +
 
 print(figure_3)
 
-ggsave(filename = "figure_3.pdf", plot = figure_3, path = "./figures/", width = 7, height = 7)
+ggsave(filename = "figure_3.jpg", plot = figure_3, path = "./figures/", width = 7, height = 7)
 
 ```
 
@@ -708,7 +705,7 @@ figure_4 <- ggplot(data = ranks_sub_w, aes(rank)) +
 
 print(figure_4)
 
-ggsave(filename = "figure_4.pdf", plot = figure_4, path = "./figures/", width = 7, height = 7)
+ggsave(filename = "figure_4.jpg", plot = figure_4, path = "./figures/", width = 7, height = 7)
 
 ```
 

@@ -16,11 +16,11 @@ output:
     css: robot.css
 ---
 
-background-image: url(./Social_Characters.png)
+background-image: url(images/Social_Characters.png)
 background-size: contain
 
 ---
-class: center, left
+class: center
 
 # Agenda
 
@@ -30,63 +30,72 @@ class: center, left
 
 
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
-
 library(knitr)
+
+options(htmltools.dir.version = FALSE)
+opts_chunk$set(echo = FALSE)
+
 ```
 
 ---
 
-# Introduction
-
-
+background-image: url(images/CA.png)
+background-size: contain
 
 ---
+class: center, middle
 
 #### Character prominence declines non-linearly according to number of mentions in each novel.
 
-```{r echo=FALSE, warning=FALSE}
-include_graphics(path = "./figures/figure_1.pdf")
+```{r  out.width="500px"}
+include_graphics(path = "./figures/figure_1.jpg")
 ```
 
+
 ---
+class: center, middle
+
 #### Number of non-assigned gender rises as character mentions decrease
 
-```{r echo=FALSE}
-include_graphics("./figures/figure_2.pdf")
-```
-
----
-#### Count by character mentions for all authors
-
-```{r echo=FALSE}
-include_graphics("./figures/figure_3.pdf")
-```
-
----
-#### Count by character mentions for women authors only
-
-```{r echo=FALSE}
-include_graphics("./figures/figure_4.pdf")
+```{r out.width="500px"}
+include_graphics("figures/figure_2.jpg")
 ```
 
 ---
 class: center, middle
 
-```{r echo=FALSE}
+#### Count bycharacter mentions for all authors
+
+```{r out.width="500px"}
+include_graphics("./figures/figure_3.jpg")
+```
+
+---
+class: center, middle
+
+#### Count by character mentions for women authors only
+
+```{r out.width="500px"}
+include_graphics("./figures/figure_4.jpg")
+```
+
+---
+class: center, middle
+
+```{r out.width="600px"}
 include_graphics("./images/Kraicer_figure_5.jpeg")
 ```
 
 ---
 class: center, middle
 
-```{r echo=FALSE}
+```{r out.width="600px"}
 include_graphics("./images/Kraicer_figure_6.jpeg")
 ```
 ---
 class: center, middle
 
-```{r echo=FALSE}
+```{r out.width="600px"}
 include_graphics("./images/Kraicer_figure_8.jpeg")
 ```
 ---
