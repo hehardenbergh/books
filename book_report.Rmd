@@ -275,6 +275,8 @@ fig_1 <- ggplot(data=rank_m, aes(x=rank, y=mean)) +
         axis.title = element_text(face="bold"),
         axis.text.x=element_text(size = 11))
 
+print(fig_1)
+
 ggsave(filename = "figure_1.jpg", plot = fig_1, path = "./figures/", width = 7, height = 7)
 ```
 
@@ -427,6 +429,8 @@ figure_2 <- ggplot(data=ranks_all, aes(x = rank, y = cumulative_q)) +
                             #family = "Times New Roman"),
         axis.title = element_text(face="bold"),
         axis.text.x = element_text(size = 11))
+
+print(figure_2)
 
 ggsave(filename = "figure_2.jpg", plot = figure_2, path = "./figures/", width = 7, height = 7)
 
