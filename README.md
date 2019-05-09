@@ -5,4 +5,4 @@
 #### Published 01/30/19
 http://culturalanalytics.org/2019/01/social-characters-the-hierarchy-of-gender-in-contemporary-english-language-fiction/
 
-This is the repository for Hardenbergh's final project in Gov 1006, Models. It contains both the original replication code, data, and published paper, as well as Hardenbergh's extension. This code is in a file called "Book Report.rmd". See "Books Presentation" for slides on the presented replication paper, given April 2019.
+This is the repository for Hardenbergh's final project in Gov 1006, Models. It contains both the original replication code, data, and published paper, as well as Hardenbergh's extension. This code is in a file called "Book Report.rmd". See "Books Presentation" for slides on the presented replication paper, given April 2019. See "Book Report" for a detailed description of the original publication.
