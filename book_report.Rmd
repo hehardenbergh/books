@@ -295,6 +295,8 @@ Below is an extension and improvement of the above figure.
 ```{r}
 ## Figure 1 Extension
 
+#color is always nice too!
+
 nodes_tidy <- nodes %>% 
   rename(num_mentions = X..MENTIONS...100K.WORDS,
          name = NAME,
@@ -303,9 +305,8 @@ nodes_tidy <- nodes %>%
 
 fig_1_ext <- nodes_tidy %>% 
   #filter(gender == "M") %>% 
-  ggplot(aes(x = gender, y = num_mentions, fill = gender)) + geom_col() + 
-  theme(axis.text.x = element_text(angle = 90))
-  
+  ggplot(aes(x = gender, y = num_mentions, fill = gender)) + geom_col()
+
 print(fig_1_ext)
 
 # make a figure that will show that the unidentified characters constitute for
@@ -332,13 +333,14 @@ print(fig_1_ext_f)
 The authors describe their "manual" process of assigning gender ID's to each character once they acquired the data. This process included an error based on how their methods failed to assign some (about fifteen) characters either male or female. Below is a table and another graphic to visualize this error. It is easier to understand that, by this bar graph, should the number of unassigned (marked with a "?" in the data) gendered characters be female, the number of female character mentions would be greater. Additionally, visualizing this error also calls more attention to the question of using a gender binary in contemporary fiction. What if there were other categories besides male and female?
 
 
-```{r}
+```{r, results='asis'}
 
 # show quickly the numbers for each character ID:
 
 gender_count <- nodes_tidy %>% 
   count(gender) %>% 
-  kable(caption = "Number of Gender Assignments for Male, Female, and Unknown")
+  kable(caption = "Number of Gender Assignments for Male, Female, and Unknown"),
+
 
 print(gender_count)
 
@@ -350,7 +352,7 @@ fig_1_ext_mf <- nodes_tidy %>%
   ggplot(aes(x = gender, y = num_mentions, fill = gender)) + geom_col() + 
   ylab("Character Mentions (Per 100k words)") + 
   xlab("Gender of Character") + 
-  title("Discrepancies of Gender in Character Mentions")
+  ggtitle("Discrepancies of Gender in Character Mentions")
 
 print(fig_1_ext_mf)
 ```
