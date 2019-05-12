@@ -122,7 +122,7 @@ edges_list <- c('edges_YA', 'edges_NYT', 'edges_MY', 'edges_SF',
                 'edges_BS', 'edges_ROM', 'edges_PW')
 ```
 
-Below is a table that describes the dataset that Kraicer and Piper are working with. They selected novels from seven different popular novels lists, based on selected books for the Readers' Choice Awards, books that received prominent literary awards,  books that appeared most frequently in the New York Times's bestsellers list since 2000, and novels that were reviewed by the NYT between 2010 and 2015. Note the differences in Percentage of women authors for each category.
+Below I replicate the table that describes the dataset that Kraicer and Piper are working with. They selected novels from seven different popular novels lists, based on selected books for the Readers' Choice Awards, books that received prominent literary awards,  books that appeared most frequently in the New York Times's bestsellers list since 2000, and novels that were reviewed by the NYT between 2010 and 2015. Note the differences in Percentage of women authors for each category.
 
 Interestingly, even though the authors report the effects that genre and author gender can have on gender bias in contemporary novels, the authors do not include the Romance category in their discussion of author gender effects - the data has 98% female authors for this category. Their paper mentions this once, but does not analyze the reasons for this or the implications it may have on Romance novel readers.
 
@@ -194,6 +194,7 @@ table_1_tidy %>%
 
 ```
 
+For the first set of figures, the authors simply display how their character rankings method correlates to the number of times a character is mentioned within 100,000 words of a selected text in any of their novels. The figures are replicated below, however it would be much simpler for whoever is reading the original paper just to get a clearer visual of something more interesting other than a black line that simply shows the nature of a ranked list. The correlation between a ranked list and the number of times a character is mentioned in a novel would be easy to understand with a short explanation included in the paper. Therefore, if this paper were to be revised, I would include simple bar graphs to show the imbalance of gender in characters who are mentioned more often within text. It becomes clear that male characters are more prominent. This would be a great addition to contextualizing the type of gender bias that the authors begin to work with in their later tests to find more detailed conclusions about the effect of gender in contemporary fiction.
 
 ```{r }
 
@@ -289,6 +290,7 @@ ggsave(filename = "figure_1.jpg", plot = fig_1, path = "./figures/", width = 7, 
 ```
 
 
+Below is an extension and improvement of the above figure. 
 
 ```{r}
 ## Figure 1 Extension
@@ -298,10 +300,6 @@ nodes_tidy <- nodes %>%
          name = NAME,
          gender = GENDER) %>% 
   arrange(desc(gender))
-
-nodes_tidy %>% 
-  count(gender) %>% 
-  kable()
 
 fig_1_ext <- nodes_tidy %>% 
   #filter(gender == "M") %>% 
@@ -327,6 +325,23 @@ fig_1_ext_f <- nodes_tidy %>%
 
 print(fig_1_ext_f)
 
+
+
+```
+
+The authors describe their "manual" process of assigning gender ID's to each character once they acquired the data. This process included an error based on how their methods failed to assign some (about fifteen) characters either male or female. Below is a table and another graphic to visualize this error. It is easier to understand that, by this bar graph, should the number of unassigned (marked with a "?" in the data) gendered characters be female, the number of female character mentions would be greater. Additionally, visualizing this error also calls more attention to the question of using a gender binary in contemporary fiction. What if there were other categories besides male and female?
+
+
+```{r}
+
+# show quickly the numbers for each character ID:
+
+gender_count <- nodes_tidy %>% 
+  count(gender) %>% 
+  kable(caption = "Number of Gender Assignments for Male, Female, and Unknown")
+
+print(gender_count)
+
 # now make a figure that simply shows the difference between number of mentions
 # between genders of characters.
 
@@ -334,14 +349,11 @@ fig_1_ext_mf <- nodes_tidy %>%
   filter(gender != "?") %>% 
   ggplot(aes(x = gender, y = num_mentions, fill = gender)) + geom_col() + 
   ylab("Character Mentions (Per 100k words)") + 
-  xlab("Gender of Character")
+  xlab("Gender of Character") + 
+  title("Discrepancies of Gender in Character Mentions")
 
 print(fig_1_ext_mf)
-
-
-
 ```
-
 
 ```{r }
 # 1d: FIGURE TWO
