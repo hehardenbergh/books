@@ -122,6 +122,10 @@ edges_list <- c('edges_YA', 'edges_NYT', 'edges_MY', 'edges_SF',
                 'edges_BS', 'edges_ROM', 'edges_PW')
 ```
 
+Below is a table that describes the dataset that Kraicer and Piper are working with. They selected novels from seven different popular novels lists, based on selected books for the Readers' Choice Awards, books that received prominent literary awards,  books that appeared most frequently in the New York Times's bestsellers list since 2000, and novels that were reviewed by the NYT between 2010 and 2015. Note the differences in Percentage of women authors for each category.
+
+Interestingly, even though the authors report the effects that genre and author gender can have on gender bias in contemporary novels, the authors do not include the Romance category in their discussion of author gender effects - the data has 98% female authors for this category. Their paper mentions this once, but does not analyze the reasons for this or the implications it may have on Romance novel readers.
+
 ```{r table 1}
 
 # gather info for table 1
@@ -211,6 +215,9 @@ mentions <- NULL
 
 files <- list.files('./books.data/nodes_ALL')
 
+# this for loop is grabbing the number of counts that a character is mentioned
+# in the BookNLP data found in the "nodes_ALL" folder.
+
 for(j in 1:length(files)){
   work  <- files[j]
   nodes <- data.frame(read_csv(paste0('books.data/nodes_ALL/', (files[j]))))
@@ -237,16 +244,17 @@ for(j in 1:length(files)){
 }
 
 # count up sums for each rank position for both cases 
+
 rank_m <- NULL
 rank_m_sub <- NULL
 
 for (i in 1:nrow(mentions)){
-  mean <- mean(num_func(mentions[i,]), na.rm=TRUE)
-  sum <- sum(mentions[i,], na.rm=TRUE)
+  mean <- mean(num_func(mentions[i,]), na.rm = TRUE)
+  sum <- sum(mentions[i,], na.rm = TRUE)
   log_sum <- log(sum)
   rank <- i
-  temp <- data.frame(cbind(rank,mean,sum,log_sum))
-  rank_m <- data.frame(rbind(rank_m,temp))
+  temp <- data.frame(cbind(rank, mean, sum, log_sum))
+  rank_m <- data.frame(rbind(rank_m, temp))
 }
 
 # for (i in 1:nrow(mentions_sub)){
@@ -281,8 +289,61 @@ ggsave(filename = "figure_1.jpg", plot = fig_1, path = "./figures/", width = 7, 
 ```
 
 
-```{r }
 
+```{r}
+## Figure 1 Extension
+
+nodes_tidy <- nodes %>% 
+  rename(num_mentions = X..MENTIONS...100K.WORDS,
+         name = NAME,
+         gender = GENDER) %>% 
+  arrange(desc(gender))
+
+nodes_tidy %>% 
+  count(gender) %>% 
+  kable()
+
+fig_1_ext <- nodes_tidy %>% 
+  #filter(gender == "M") %>% 
+  ggplot(aes(x = gender, y = num_mentions, fill = gender)) + geom_col() + 
+  theme(axis.text.x = element_text(angle = 90))
+  
+print(fig_1_ext)
+
+# make a figure that will show that the unidentified characters constitute for
+# about another 50% of how many times female characters are mentioned, which is
+# the error that the authors talk about in their paper. if these were identified
+# as female, it would obviously change the way we see the number of times a
+# gendered character is mentioned in 100K words. see my paper for a further
+# discussion of how creating this binary may actually be less beneficial for
+# future studies, and considering the challenge of moving past this binary in
+# this quantitative analysis.
+
+fig_1_ext_f <- nodes_tidy %>% 
+  filter(gender != "M") %>% 
+  ggplot(aes(x = gender, y = num_mentions, fill = gender)) + geom_col() + 
+  ylab("Gender of Character") +
+  xlab("Character Mentions (Per 100k words)")
+
+print(fig_1_ext_f)
+
+# now make a figure that simply shows the difference between number of mentions
+# between genders of characters.
+
+fig_1_ext_mf <- nodes_tidy %>% 
+  filter(gender != "?") %>% 
+  ggplot(aes(x = gender, y = num_mentions, fill = gender)) + geom_col() + 
+  ylab("Character Mentions (Per 100k words)") + 
+  xlab("Gender of Character")
+
+print(fig_1_ext_mf)
+
+
+
+```
+
+
+```{r }
 # 1d: FIGURE TWO
 # - - - - - - - - 
 
@@ -297,9 +358,9 @@ files <- list.files('./books.data/nodes_ALL')
 # once on all works by women (raw_w) 
 # once on only works by women with main character identified by gender (raw_sub_w)
 
-# what you should do is make a vector with accurate dimensions if you know it,
-# with NA's. but the authors just create objects with empty space to use later
-# using NULL. 
+# the authors always make empty objects for future use. Good practice is to make
+# a vector with accurate dimensions, if you know them. But the authors
+# just create objects with empty space to use later, using NULL.
 
 raw <- NULL
 raw_sub <- NULL
@@ -561,7 +622,6 @@ for (j in 1:10000){
 ```
 
 ```{r  include = FALSE}
-
 # 1b: REPORTED VALUES
 # - - - - - - - - - - 
 
@@ -604,7 +664,6 @@ boot_chars_ag_wROM <- chars_func(chars_20$ag)
 
 
 ```{r include=FALSE}
-
 # 1d: SIGNIFICANCE TESTING
 # - - - - - - - - - - - - - 
 
